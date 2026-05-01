@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!--
+      Preference bootstrap. Runs before any stylesheet or bundle so theme,
+      a11y, and low-carbon classes land on <html> before first paint —
+      no flash of the wrong theme on reload.
+
+      Reads three localStorage keys:
+        theme           -> 'light' | 'dark'   (defaults to dark unless OS prefers light)
+        pref:a11y       -> '1' | '0'
+        pref:low-carbon -> '1' | '0'
+
+      Same keys are used by src/hooks/usePreferences.ts so the runtime
+      stores stay in sync with what we applied here.
+      — Mirabelle
+    -->
+    <script>
+      (function () {
+        try {
+          var d = document.documentElement;
+          var stored = localStorage.getItem('theme');
+          var prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+          var theme = stored || (prefersLight ? 'light' : 'dark');
+          if (theme === 'dark') d.classList.add('dark');
+          if (localStorage.getItem('pref:a11y') === '1') d.classList.add('a11y');
+          if (localStorage.getItem('pref:low-carbon') === '1') d.classList.add('low-carbon');
+        } catch (_) {
+          /* private mode / SSR — fall through to defaults */
+        }
+      })();
+    </script>
+
+    <!--
+      Default page metadata. Per-route titles + descriptions are set at
+      runtime by usePageMeta() (see src/hooks/usePageMeta.ts) so each
+      route gets its own title, description, OG tags, and canonical URL.
+      What lives here is the fallback shown to crawlers that don't run
+      JS, and the OG/Twitter image (which never changes per-route).
+      — Mirabelle
+    -->
+    <title>Built by Mirabelle — small, sharp Chrome extensions</title>
+    <meta name="description" content="Built by Mirabelle Doiron — a workspace of small, sharp Chrome extensions for design-system-minded engineers. HomeBase, Saved Links, and more. Token-driven, accessible (WCAG 2.1 AA), local-only, open source." />
+    <meta name="author" content="Mirabelle Doiron" />
+    <meta name="theme-color" content="#1f2a44" />
+    <meta name="robots" content="index,follow" />
+
+    <!-- Open Graph (Facebook, LinkedIn, Slack, etc.) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Built by Mirabelle" />
+    <meta property="og:url" content="https://builtbymirabelle.com/" />
+    <meta property="og:title" content="Built by Mirabelle — small, sharp Chrome extensions" />
+    <meta property="og:description" content="A workspace of small, sharp Chrome extensions for design-system-minded engineers. HomeBase, Saved Links, and more." />
+    <meta property="og:image" content="https://builtbymirabelle.com/og-image.svg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Built by Mirabelle — small, sharp Chrome extensions" />
+    <meta name="twitter:description" content="Small, sharp Chrome extensions for design-system-minded engineers." />
+    <meta name="twitter:image" content="https://builtbymirabelle.com/og-image.svg" />
+
+    <!-- Canonical URL — overridden per-route -->
+    <link rel="canonical" href="https://builtbymirabelle.com/" />
+
+    <!-- Favicon set — the BBM monogram, not Vercel's default -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.svg" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- Structured data: Person (helps Google show "Mirabelle Doiron" knowledge panel) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Mirabelle Doiron",
+        "url": "https://builtbymirabelle.com",
+        "jobTitle": "UX Engineer",
+        "sameAs": [
+          "https://github.com/mirabelledoiron",
+          "https://mirabelledoiron.com"
+        ]
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,236 @@
+/*
+ * Built by Mirabelle — design tokens + theme/a11y/low-carbon overrides.
+ *
+ * The site is fully token-driven. Every colour, border, and surface is
+ * a CSS custom property defined here. Components reference tokens via
+ * Tailwind's arbitrary-value syntax: bg-[color:var(--color-bg)] etc.,
+ * or via the helper utility classes at the bottom of this file.
+ *
+ * Three preference layers stack on <html>:
+ *   :root            -> light mode tokens
+ *   .dark            -> dark mode tokens
+ *   .a11y            -> high-contrast + larger text + stronger focus +
+ *                      underlined links + reduced motion
+ *   .low-carbon      -> system fonts, no shadows, no blur, transparent
+ *                      surfaces, hide images that opt-in via LowCarbonImage
+ *
+ * Order matters: .a11y and .low-carbon overrides come AFTER both light
+ * and dark tokens so they win regardless of the active theme.
+ *
+ * Update tokens here and every component re-themes automatically.
+ *
+ * — Mirabelle
+ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* -------------------------------------------------------------------------
+ * Light mode (default)
+ * ----------------------------------------------------------------------- */
+:root {
+  /* Surfaces */
+  --color-bg: #f8fafc;
+  --color-bg-subtle: #f1f5f9;
+  --color-bg-muted: #e2e8f0;
+
+  /* Text */
+  --color-fg: #0f172a;
+  --color-fg-muted: #334155;
+  --color-fg-subtle: #64748b;
+
+  /* Borders */
+  --color-border: #e2e8f0;
+  --color-border-strong: #cbd5e1;
+
+  /* Accent (brand navy + warm gold pair, light-mode tuned) */
+  --color-accent: #1f2a44;
+  --color-accent-hover: #14213d;
+  --color-accent-fg: #ffffff;
+
+  /* Status */
+  --color-destructive: #b91c1c;
+  --color-success: #15803d;
+  --color-warning: #b45309;
+
+  /* Focus ring */
+  --color-focus: #1f2a44;
+  --focus-ring-width: 2px;
+
+  /* Motion */
+  --motion-fast: 150ms;
+  --motion-base: 250ms;
+
+  /* Type */
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  --font-size-base: 100%;
+}
+
+/* -------------------------------------------------------------------------
+ * Dark mode
+ * ----------------------------------------------------------------------- */
+.dark {
+  --color-bg: #0f172a;
+  --color-bg-subtle: #1e293b;
+  --color-bg-muted: #334155;
+
+  --color-fg: #f8fafc;
+  --color-fg-muted: #cbd5e1;
+  --color-fg-subtle: #94a3b8;
+
+  --color-border: #1e293b;
+  --color-border-strong: #334155;
+
+  --color-accent: #e0a458;
+  --color-accent-hover: #c98a3d;
+  --color-accent-fg: #0f172a;
+
+  --color-destructive: #f87171;
+  --color-success: #4ade80;
+  --color-warning: #fbbf24;
+
+  --color-focus: #e0a458;
+}
+
+/* -------------------------------------------------------------------------
+ * A11y mode — applies on top of light or dark
+ *   - Higher contrast text
+ *   - Larger base font (112.5% — about 18px)
+ *   - Thicker focus ring
+ *   - Underlined links
+ *   - Reduced motion
+ * ----------------------------------------------------------------------- */
+.a11y {
+  --color-fg-muted: var(--color-fg);
+  --color-fg-subtle: var(--color-fg);
+  --color-border: var(--color-border-strong);
+  --focus-ring-width: 3px;
+  --font-size-base: 112.5%;
+  --motion-fast: 0ms;
+  --motion-base: 0ms;
+}
+
+.a11y.dark {
+  --color-bg-subtle: #000000;
+  --color-bg: #0a0f1f;
+  --color-fg: #ffffff;
+  --color-border-strong: #ffffff;
+  --color-accent: #ffd166;
+  --color-accent-hover: #ffd166;
+  --color-focus: #ffd166;
+}
+
+.a11y:not(.dark) {
+  --color-bg: #ffffff;
+  --color-fg: #000000;
+  --color-border-strong: #000000;
+  --color-accent: #14213d;
+  --color-accent-hover: #0a112a;
+  --color-focus: #000000;
+}
+
+.a11y a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.a11y *,
+.a11y *::before,
+.a11y *::after {
+  transition-duration: 0ms !important;
+  animation-duration: 0ms !important;
+  animation-iteration-count: 1 !important;
+  scroll-behavior: auto !important;
+}
+
+/* -------------------------------------------------------------------------
+ * Low-carbon mode
+ *   - System fonts only
+ *   - No shadows, no blur, no gradients
+ *   - Transparent cards (one less layer to paint)
+ *   - <LowCarbonImage> hides via .lc-image
+ * ----------------------------------------------------------------------- */
+.low-carbon {
+  --font-sans: system-ui, sans-serif;
+}
+
+.low-carbon * {
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background-image: none !important;
+}
+
+.low-carbon .lc-image {
+  display: none !important;
+}
+
+.low-carbon .lc-card {
+  background-color: transparent !important;
+}
+
+/* -------------------------------------------------------------------------
+ * Respect OS-level reduced motion regardless of toggles
+ * ----------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0ms !important;
+    animation-duration: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* -------------------------------------------------------------------------
+ * Reset + base
+ * ----------------------------------------------------------------------- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: var(--font-size-base);
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-bg);
+  color: var(--color-fg);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color var(--motion-base),
+    color var(--motion-base);
+}
+
+#root {
+  max-width: none;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+}
+
+/* Visible, token-driven focus ring on keyboard nav. */
+:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Skip-link target — focusable <main> for the "skip to content" pattern. */
+main:focus {
+  outline: none;
+}
+
+/* Selection uses the accent so it reads in both themes. */
+::selection {
+  background-color: var(--color-accent);
+  color: var(--color-accent-fg);
+}
