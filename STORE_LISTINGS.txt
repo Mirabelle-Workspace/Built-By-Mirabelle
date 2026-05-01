@@ -1,0 +1,272 @@
+================================================================
+CHROME WEB STORE LISTINGS — paste-ready plain text
+================================================================
+
+Latest ZIPs to upload (rebuilt after each release):
+  HomeBase 1.0.3  ->  website/public/homebase.zip
+  Saved Links 2.2.0  ->  website/public/saved-links.zip
+
+Repo: https://github.com/Mirabelle-Workspace/Built-By-Mirabelle
+
+
+================================================================
+HOMEBASE  (already published — update only)
+ID: abpflkdpdkhhgciiipojnmemcaofgbkp
+================================================================
+
+----------------------------------------------------------------
+NAME
+----------------------------------------------------------------
+HomeBase
+
+
+----------------------------------------------------------------
+SUMMARY (from manifest, 132 char max)
+----------------------------------------------------------------
+A new tab page you actually open on purpose. Themed bookmarks, custom categories, instant search. Local-only.
+
+
+----------------------------------------------------------------
+SINGLE PURPOSE
+----------------------------------------------------------------
+Replace Chrome's new tab page with a customizable, themed bookmarks dashboard.
+
+
+----------------------------------------------------------------
+DESCRIPTION  (paste into Description field)
+----------------------------------------------------------------
+HomeBase replaces Chrome's default new tab with a calm, themed dashboard of the bookmarks you actually use, grouped into the categories that match how you think.
+
+Most days you open a new tab and immediately type into the address bar — the new-tab page itself disappears. HomeBase makes the new-tab page worth landing on instead of skipping past.
+
+Key features
+
+- Curated bookmarks grouped into custom categories you control
+- Five built-in themes plus a custom-color editor for background, cards, text, and accents
+- Drag and drop to reorder links and move them between categories
+- Quick search across titles, URLs, and category names
+- JSON export and import for backups, machine migration, and version control
+- Local-only: every change is saved instantly to your browser's storage
+- Works offline. Your dashboard loads even when the internet doesn't
+- Full keyboard navigation and screen-reader support
+
+Privacy
+
+Everything stays in your browser. No accounts, no servers, no telemetry, no analytics. The only permission requested is "storage", used to persist your bookmarks and theme selection.
+
+Open source
+
+GitHub: https://github.com/Mirabelle-Workspace/Built-By-Mirabelle
+Built by Mirabelle Doiron — https://builtbymirabelle.com
+
+Companion extension
+
+If you like HomeBase, look at Saved Links — a sibling extension for bulk-importing your open tabs into a categorized, searchable local library. Same design language, same local-only privacy.
+
+
+----------------------------------------------------------------
+CATEGORY
+----------------------------------------------------------------
+Productivity / Workflow & Planning
+
+
+----------------------------------------------------------------
+LANGUAGE
+----------------------------------------------------------------
+English (United States)
+
+
+----------------------------------------------------------------
+HOMEPAGE URL
+----------------------------------------------------------------
+https://builtbymirabelle.com/products/homebase
+
+
+----------------------------------------------------------------
+SUPPORT URL
+----------------------------------------------------------------
+https://github.com/Mirabelle-Workspace/Built-By-Mirabelle/issues
+
+
+----------------------------------------------------------------
+PERMISSION JUSTIFICATION — storage
+----------------------------------------------------------------
+Required to save the user's bookmarks, custom categories, theme selection, and color preferences across browser sessions. All data is stored locally on the user's machine and never transmitted.
+
+
+----------------------------------------------------------------
+STORE ICON  (128 x 128)
+----------------------------------------------------------------
+File: Homebase/assets/icon-grid-128.png
+
+
+----------------------------------------------------------------
+SCREENSHOTS  (1280 x 800, four suggested)
+----------------------------------------------------------------
+1. Default themed new-tab page populated with categories
+   Caption: A clean, themed dashboard on every new tab
+
+2. Sidebar open showing the Add-bookmark form and category list
+   Caption: Custom categories — group links the way you think
+
+3. Theme picker with the five built-in themes visible
+   Caption: Five built-in themes and full custom colors
+
+4. Search bar with a query and matching results
+   Caption: Drag-and-drop reorder, search, and offline by default
+
+
+
+================================================================
+SAVED LINKS  (new listing — first submission)
+================================================================
+
+----------------------------------------------------------------
+NAME
+----------------------------------------------------------------
+Saved Links
+
+
+----------------------------------------------------------------
+SUMMARY (132 char max)
+----------------------------------------------------------------
+Bulk-import open tabs into a categorized, searchable library. WCAG 2.1 AA, local-only, no account.
+
+
+----------------------------------------------------------------
+SINGLE PURPOSE
+----------------------------------------------------------------
+Save and categorize the URLs of your open Chrome tabs in a searchable local library.
+
+
+----------------------------------------------------------------
+DESCRIPTION  (paste into Description field)
+----------------------------------------------------------------
+Saved Links is the in-between layer for tab fatigue. One keyboard shortcut takes every tab in your current Chrome window and drops it into a categorized, tagged, searchable local library — so you can actually close those tabs without losing the thread.
+
+Open-tab fatigue is real. You finish a research session with forty tabs across three windows and no good way to triage them. Bookmarking each one is friction. Closing them feels like loss. Reading-list apps want accounts. Saved Links is the in-between: tags, search, dedup, all local.
+
+Key features
+
+- One-click tab import. Press Alt+Shift+L (Option+Shift+L on Mac) and every tab in the current window lands in your library, deduped against what you already have, internal pages skipped automatically.
+- Customizable categories. Rename or delete any category from its header. The seed is a starting suggestion, not a permanent structure.
+- Tag filters. Click any tag pill at the top of the page to filter; click again to clear.
+- Live search across titles, URLs, descriptions, tags, and category names.
+- JSON export and import for backups and machine migration.
+- Keyboard-first. Alt+Shift+S opens Saved Links, Esc closes the form, full Tab navigation everywhere.
+- Dark mode and reduced-motion both respect your OS preferences.
+
+Accessibility — WCAG 2.1 AA
+
+Saved Links is audited and tested for WCAG 2.1 Level AA conformance. Every text and UI-component contrast pair is verified against the relative luminance formula. A 16-test Playwright and axe-core suite covers keyboard order, form error identification, reflow at 320 pixels, 200% zoom, prefers-reduced-motion, and accessibility-tree snapshots. Full audit:
+
+https://github.com/Mirabelle-Workspace/Built-By-Mirabelle/blob/main/saved-links/AUDIT.md
+
+Privacy
+
+Local-only. Every link is stored in this extension's localStorage. Nothing leaves your browser. No accounts, no servers, no telemetry, no analytics, no cloud sync.
+
+Open source
+
+GitHub: https://github.com/Mirabelle-Workspace/Built-By-Mirabelle/tree/main/saved-links
+Built by Mirabelle Doiron — https://builtbymirabelle.com
+
+Companion extension
+
+If you also want a themed new-tab page with curated bookmarks, look at HomeBase — a sibling extension by the same author. Same design language, same local-only privacy.
+
+
+----------------------------------------------------------------
+CATEGORY
+----------------------------------------------------------------
+Productivity / Workflow & Planning
+
+
+----------------------------------------------------------------
+LANGUAGE
+----------------------------------------------------------------
+English (United States)
+
+
+----------------------------------------------------------------
+HOMEPAGE URL
+----------------------------------------------------------------
+https://builtbymirabelle.com/products/saved-links
+
+
+----------------------------------------------------------------
+SUPPORT URL
+----------------------------------------------------------------
+https://github.com/Mirabelle-Workspace/Built-By-Mirabelle/issues
+
+
+----------------------------------------------------------------
+PERMISSION JUSTIFICATION — tabs
+----------------------------------------------------------------
+Required to read the URL and title of tabs in the current window when the user triggers a bulk import via the toolbar button or the Alt+Shift+L keyboard shortcut. The extension never reads tab data outside of these explicit user actions and never transmits the data anywhere.
+
+
+----------------------------------------------------------------
+PERMISSION JUSTIFICATION — scripting
+----------------------------------------------------------------
+Required so the background service worker can invoke the Saved Links page's in-page bulk-add API when the user presses the Alt+Shift+L keyboard shortcut. The script target is restricted to the Saved Links extension page itself; no external sites are scripted.
+
+
+----------------------------------------------------------------
+KEYBOARD SHORTCUTS  (declared in manifest, shown in store)
+----------------------------------------------------------------
+Alt+Shift+S — Open or focus the Saved Links page
+Alt+Shift+L — Send every tab in the current window to Saved Links
+
+
+----------------------------------------------------------------
+STORE ICON  (128 x 128)
+----------------------------------------------------------------
+File: saved-links/icon-128.png
+
+
+----------------------------------------------------------------
+SCREENSHOTS  (1280 x 800, four suggested)
+----------------------------------------------------------------
+1. Empty state right after install, the nine seed categories visible
+   Caption: Customizable categories — Rename or Delete any of them
+
+2. Populated after Alt+Shift+L, toast confirming counts
+   Caption: Press Alt+Shift+L — every tab in your window lands here, deduped
+
+3. Tag-filter row with one pill active, search bar with a query
+   Caption: Tag filters and live search across every field
+
+4. Form panel open with an item being edited, focus ring visible
+   Caption: Full keyboard navigation, WCAG 2.1 AA, no account, no cloud
+
+
+
+================================================================
+PRIVACY PRACTICES FORM (both extensions, identical answers)
+================================================================
+
+Personally identifiable information     -> No
+Health information                      -> No
+Financial information                   -> No
+Authentication information              -> No
+Personal communications                 -> No
+Location                                -> No
+Web history                             -> No
+User activity                           -> No
+Website content                         -> No
+
+Single Purpose declaration              -> see "SINGLE PURPOSE" above
+Are you using remote code?              -> No
+Privacy policy URL                      -> https://builtbymirabelle.com (or omit if not required)
+
+
+================================================================
+NOTES
+================================================================
+
+- HomeBase update review typically takes 1 to 3 business days.
+- Saved Links is a new listing — first submission can take longer.
+- If the dashboard rejects "scripting" as unjustified, point at this manifest line:
+    "scripting": "page-targeted bulk-add invocation triggered by user keyboard shortcut"
+- All copy in this file avoids exclamation points by design (brand rule).
