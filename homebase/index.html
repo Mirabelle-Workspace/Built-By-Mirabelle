@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="A customizable HomeBase with bookmark management, theme selection, and search functionality"
+    />
+    <meta name="author" content="Mirabelle Doiron" />
+    <title>HomeBase</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <div style="display: flex; min-height: 100vh">
+      <aside
+        id="sidebar"
+        class="sidebar"
+        role="complementary"
+        aria-label="Theme customization"
+      >
+        <button
+          id="toggleSidebar"
+          class="toggle-btn"
+          title="Toggle Sidebar"
+          aria-label="Toggle theme customization sidebar"
+          aria-expanded="true"
+        >
+          ‹
+        </button>
+
+        <h2>Select Theme</h2>
+        <div
+          id="themeSelector"
+          style="display: flex; flex-direction: column; gap: 10px"
+          role="radiogroup"
+          aria-label="Choose theme"
+        ></div>
+
+        <h2>Map Colors</h2>
+        <div role="group" aria-label="Color mapping options">
+          <label class="dot-label" for="pageBgSelect">Page Background</label>
+          <select
+            id="pageBgSelect"
+            aria-label="Choose page background color"
+          ></select>
+
+          <label class="dot-label" for="cardBgSelect">Card Background</label>
+          <select
+            id="cardBgSelect"
+            aria-label="Choose card background color"
+          ></select>
+
+          <label class="dot-label" for="headerColorSelect">Header Color</label>
+          <select
+            id="headerColorSelect"
+            aria-label="Choose header color"
+          ></select>
+
+          <label class="dot-label" for="textColorSelect">Text Color</label>
+          <select id="textColorSelect" aria-label="Choose text color"></select>
+        </div>
+
+        <button
+          id="saveThemeBtn"
+          style="margin-top: 20px"
+          aria-label="Save current theme customizations"
+        >
+          Save Theme
+        </button>
+
+        <h2>Layout</h2>
+        <div class="layout-toggle" role="group" aria-label="Layout options">
+          <button
+            id="layoutRowsBtn"
+            class="layout-btn active"
+            aria-pressed="true"
+            title="Stack categories vertically"
+          >
+            Rows
+          </button>
+          <button
+            id="layoutGridBtn"
+            class="layout-btn"
+            aria-pressed="false"
+            title="Display categories in a grid"
+          >
+            Grid
+          </button>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <h1>HomeBase</h1>
+
+        <form id="linkForm" role="form" aria-label="Add new bookmark">
+          <label for="linkTitle" class="sr-only">Bookmark title</label>
+          <input
+            type="text"
+            id="linkTitle"
+            placeholder="Title"
+            required
+            aria-describedby="linkTitleHelp"
+          />
+
+          <label for="linkURL" class="sr-only">Bookmark URL</label>
+          <input
+            type="url"
+            id="linkURL"
+            placeholder="https://example.com"
+            required
+            aria-describedby="linkURLHelp"
+          />
+
+          <label for="categorySelect" class="sr-only">Category</label>
+          <select id="categorySelect" required aria-describedby="categoryHelp">
+            <option value="" disabled selected>Choose category</option>
+            <option value="__custom__">+ New category...</option>
+          </select>
+
+          <label for="customCategory" class="sr-only">New category name</label>
+          <input
+            type="text"
+            id="customCategory"
+            placeholder="Enter new category"
+            aria-describedby="customCategoryHelp"
+          />
+
+          <button type="submit" aria-describedby="addButtonHelp">
+            Add Bookmark
+          </button>
+        </form>
+
+        <!-- Hidden help text for screen readers -->
+        <div class="sr-only">
+          <div id="linkTitleHelp">
+            Enter a descriptive title for your bookmark
+          </div>
+          <div id="linkURLHelp">
+            Enter the complete web address including https://
+          </div>
+          <div id="categoryHelp">
+            Choose an existing category or create a new one
+          </div>
+          <div id="customCategoryHelp">
+            Enter the name for your new category
+          </div>
+          <div id="addButtonHelp">Add this bookmark to your collection</div>
+        </div>
+
+        <!-- Search/Filter Section - Minimal and accessible -->
+        <div class="search-container" role="search">
+          <label for="searchInput" class="sr-only">Search your bookmarks</label>
+          <input
+            type="search"
+            id="searchInput"
+            placeholder="🔍 Search your links"
+            aria-label="Search your bookmarks and categories"
+            aria-describedby="searchStats"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <button
+            id="clearSearch"
+            type="button"
+            aria-label="Clear search"
+            title="Clear search (Escape key)"
+          >
+            ×
+          </button>
+        </div>
+
+        <div
+          id="searchStats"
+          class="search-stats"
+          style="display: none"
+          aria-live="polite"
+          aria-atomic="true"
+        ></div>
+
+        <!-- Backup/Export Section -->
+        <section class="backup-section" aria-label="Data backup and management">
+          <h2>Backup Your Data</h2>
+          <div class="backup-buttons">
+            <button id="exportBtn" class="export-btn">Export All Data</button>
+            <input
+              type="file"
+              id="importFile"
+              accept=".json"
+              style="display: none"
+            />
+            <button id="importBtn" class="import-btn">Import Data</button>
+            <button id="resetBtn" class="reset-btn">Reset All Data</button>
+          </div>
+          <div id="statusMessage"></div>
+        </section>
+
+        <div id="categoriesContainer"></div>
+      </main>
+    </div>
+
+    <footer
+      style="
+        text-align: center;
+        padding: 0.5em;
+        background: var(--card-bg);
+        color: #e0e0e0;
+      "
+    >
+      <p>© <span id="currentYear"></span> All Rights Reserved</p>
+      <p>
+        Created by
+        <a
+          href="https://mirabelledoiron.com/"
+          target="_blank"
+          style="color: var(--accent); text-decoration: none"
+          >Mirabelle</a
+        >, customized by you
+      </p>
+      <p style="font-size: 12px; opacity: 0.7">
+        💾 Data saved locally in your browser
+      </p>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>

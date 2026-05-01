@@ -1,0 +1,15 @@
+{
+  "timestamp": "2025-08-13T23:46:56.628Z",
+  "version": "1.0.0",
+  "data": {
+    "--card-bg": "",
+    "--header-color": "",
+    "--page-bg": "",
+    "--text-color": "",
+    "customCategories": "[\"Frontend Tools\",\"My Websites | My Apps\",\"AI\",\"Photography\",\"iOS\",\"Reading\",\"Learning\"]",
+    "customLinksWithCategories": "[{\"title\":\"GoDaddy\",\"url\":\"https://www.godaddy.com/\",\"category\":\"Frontend Tools\"},{\"title\":\"Design System\",\"url\":\"https://lumieredesignsystem.com/\",\"category\":\"My Websites | My Apps\"},{\"title\":\"My Storybook\",\"url\":\"https://687bba4d795507daa442f549-cgildnerdh.chromatic.com/?path=/docs/lumiere-lumiereanimation--docs\",\"category\":\"My Websites | My Apps\"},{\"title\":\"UIFlix\",\"url\":\"https://uiflix.org/\",\"category\":\"My Websites | My Apps\"},{\"title\":\"Design System Library\",\"url\":\"https://lumieredesignsystemlibrary.com/\",\"category\":\"My Websites | My Apps\"},{\"title\":\"mirabelledoiron.com\",\"url\":\"https://mirabelledoiron.com/\",\"category\":\"My Websites | My Apps\"},{\"title\":\"Claude\",\"url\":\"https://claude.ai/new\",\"category\":\"AI\"},{\"title\":\"Perplexity\",\"url\":\"https://www.perplexity.ai/\",\"category\":\"AI\"},{\"title\":\"ChatGPT\",\"url\":\"https://chatgpt.com/\",\"category\":\"AI\"},{\"title\":\"OpenAI\",\"url\":\"https://openai.com/\",\"category\":\"AI\"},{\"title\":\"Anthropic Dashboard\",\"url\":\"https://console.anthropic.com/dashboard\",\"category\":\"AI\"},{\"title\":\"GitHub\",\"url\":\"https://github.com/mirabelle514?tab=repositories\",\"category\":\"Frontend Tools\"},{\"title\":\"Mirabelle Photography\",\"url\":\"https://www.mirabellephotography.com/\",\"category\":\"Photography\"},{\"title\":\"Mirabelle Photography Admin\",\"url\":\"https://manage.wix.com/dashboard/d5a222ce-9bc6-4191-b97d-bd6627697816/home\",\"category\":\"Photography\"},{\"title\":\"Apple Dev\",\"url\":\"https://developer.apple.com/\",\"category\":\"iOS\"},{\"title\":\"Apple Design\",\"url\":\"https://developer.apple.com/design/\",\"category\":\"iOS\"},{\"title\":\"Medium\",\"url\":\"https://medium.com/\",\"category\":\"Reading\"},{\"title\":\"Angular\",\"url\":\"https://angular.dev/\",\"category\":\"Frontend Tools\"},{\"title\":\"Vite\",\"url\":\"https://vite.dev/guide/\",\"category\":\"Frontend Tools\"},{\"title\":\"Typescript\",\"url\":\"https://www.typescriptlang.org/\",\"category\":\"Frontend Tools\"},{\"title\":\"React\",\"url\":\"https://react.dev/\",\"category\":\"Frontend Tools\"},{\"title\":\"Tailwind CSS\",\"url\":\"https://tailwindcss.com/\",\"category\":\"Frontend Tools\"},{\"title\":\"M3 Google Open Source\",\"url\":\"https://m3.material.io/\",\"category\":\"Frontend Tools\"},{\"title\":\"FreeCodeCamp\",\"url\":\"https://www.freecodecamp.org/learn/\",\"category\":\"Learning\"},{\"title\":\"My GitBooks\",\"url\":\"https://app.gitbook.com/o/ov6T6KWsKxK9XS5vAKtY/home\",\"category\":\"Frontend Tools\"}]",
+    "extensionVersion": "1.0.0",
+    "selectedTheme": "Elegant Midnight",
+    "sidebarCollapsed": "false"
+  }
+}

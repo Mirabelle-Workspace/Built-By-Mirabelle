@@ -1,0 +1,2314 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="A customizable HomeBase with bookmark management, theme selection, and search functionality"
+    />
+    <meta name="author" content="Mirabelle Doiron" />
+    <title>HomeBase</title>
+    <style>
+      :root {
+        --primary: #0d1b2a;
+        --secondary: #1b263b;
+        --accent: #e0a458;
+        --background: #f4f4f4;
+        --text: #0d1b2a;
+        --danger: #ff3b30;
+
+        --font-family: Helvetica, sans-serif;
+
+        --page-bg: var(--primary);
+        --card-bg: var(--secondary);
+        --header-color: var(--accent);
+        --text-color: var(--text);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        font-family: var(--font-family);
+        background-color: var(--page-bg);
+        color: var(--text-color);
+      }
+
+      h1,
+      h2 {
+        text-align: center;
+        color: var(--header-color);
+      }
+
+      /* Skip link for keyboard navigation */
+      .skip-link {
+        position: absolute;
+        top: -40px;
+        left: 6px;
+        background: var(--accent);
+        color: white;
+        padding: 8px;
+        text-decoration: none;
+        border-radius: 4px;
+        z-index: 1000;
+        font-weight: bold;
+      }
+
+      .skip-link:focus {
+        top: 6px;
+      }
+
+      /* Accessibility improvements */
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      /* Focus indicators for accessibility */
+      button:focus,
+      input:focus,
+      select:focus,
+      a:focus {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+
+      /* High contrast mode support */
+      @media (prefers-contrast: high) {
+        #searchInput {
+          border: 2px solid #000;
+        }
+
+        #clearSearch {
+          border: 1px solid #000;
+        }
+      }
+
+      /* Reduced motion support */
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+
+      /* Search Bar Styles - Minimal and accessible */
+      .search-container {
+        max-width: 1000px;
+        margin: 0 auto 20px;
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+
+      #searchInput {
+        width: 250px;
+        padding: 6px 10px;
+        font-size: 13px;
+        border-radius: 15px;
+        border: 1px solid #e0e0e0;
+        background: #f8f9fa;
+        color: var(--text);
+        transition: all 0.2s ease;
+      }
+
+      #searchInput:focus {
+        outline: none;
+        border-color: var(--accent);
+        background: white;
+        width: 320px;
+      }
+
+      #searchInput::placeholder {
+        color: #aaa;
+        font-style: italic;
+      }
+
+      #clearSearch {
+        width: 20px;
+        height: 20px;
+        padding: 0;
+        background: #e9ecef;
+        color: #6c757d;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 12px;
+        display: none; /* Initially hidden */
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+        opacity: 0.6;
+        line-height: 1;
+      }
+
+      #clearSearch:hover {
+        background: #dc3545;
+        color: white;
+        opacity: 1;
+        transform: scale(1.1);
+      }
+
+      .search-stats {
+        text-align: center;
+        color: var(--header-color);
+        font-size: 11px;
+        margin-bottom: 10px;
+        font-style: italic;
+        opacity: 0.8;
+      }
+
+      form {
+        max-width: 1000px;
+        margin: 0 auto 30px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 10px;
+      }
+
+      input,
+      select,
+      button {
+        padding: 12px;
+        font-size: 16px;
+        border-radius: 6px;
+        border: none;
+        width: 100%;
+      }
+
+      button {
+        background-color: var(--accent);
+        color: var(--background);
+        cursor: pointer;
+      }
+
+      button:hover {
+        opacity: 0.9;
+      }
+
+      #customCategory {
+        display: none;
+      }
+
+      .category-card {
+        background-color: var(--card-bg);
+        color: var(--text-color);
+        font-family: var(--font-family);
+        border-radius: 12px;
+        padding: 20px;
+        margin: 20px auto;
+        max-width: 1000px;
+        transition: opacity 0.3s ease;
+      }
+
+      .category-card.hidden {
+        display: none;
+      }
+
+      .category-card h2 {
+        color: var(--header-color) !important;
+        text-align: center;
+      }
+
+      .link-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 15px;
+        margin-top: 15px;
+        min-height: 60px; /* Allows for drop zones */
+      }
+
+      /* Drag and Drop Styles */
+      .link-grid a {
+        display: block;
+        background: white;
+        padding: 12px 18px;
+        border-radius: 8px;
+        text-decoration: none;
+        color: var(--text-color);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease;
+        position: relative;
+        cursor: move;
+      }
+
+      .link-grid a:hover {
+        background-color: var(--accent);
+        color: white;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .link-grid a.dragging {
+        opacity: 0.5;
+        transform: rotate(3deg);
+        z-index: 1000;
+      }
+
+      .link-grid a.hidden {
+        display: none;
+      }
+
+      .link-grid.drag-over {
+        background: rgba(224, 164, 88, 0.1);
+        border: 2px dashed var(--accent);
+        border-radius: 8px;
+      }
+
+      @keyframes pulse {
+        from {
+          opacity: 0.4;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      /* Drag handle */
+      .drag-handle {
+        position: absolute;
+        left: 5px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #ccc;
+        font-size: 14px;
+        cursor: move;
+        padding: 2px;
+        border-radius: 2px;
+        transition: all 0.2s ease;
+      }
+
+      .link-grid a:hover .drag-handle {
+        color: white;
+        background: rgba(0, 0, 0, 0.2);
+      }
+
+      /* Search highlighting */
+      .highlight {
+        background-color: yellow;
+        color: black;
+        font-weight: bold;
+      }
+
+      .delete-link {
+        position: absolute;
+        top: 5px;
+        right: 8px;
+        background: #ff4444;
+        color: white;
+        border: none;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        font-size: 12px;
+        cursor: pointer;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+      }
+
+      .edit-link {
+        position: absolute;
+        top: 5px;
+        right: 35px;
+        background: #4caf50;
+        color: white;
+        border: none;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        font-size: 10px;
+        cursor: pointer;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+      }
+
+      .link-grid a:hover .delete-link,
+      .link-grid a:hover .edit-link {
+        display: flex;
+      }
+
+      .delete-link:hover {
+        background: #cc0000;
+      }
+
+      .edit-link:hover {
+        background: #45a049;
+      }
+
+      .category-header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+
+      .delete-category {
+        position: absolute;
+        right: 0;
+        background: #ff4444;
+        color: white;
+        border: none;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        font-size: 14px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+      }
+
+      .edit-category {
+        position: absolute;
+        right: 30px;
+        background: #4caf50;
+        color: white;
+        border: none;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        font-size: 12px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+      }
+
+      .delete-category:hover {
+        background: #cc0000;
+      }
+
+      .edit-category:hover {
+        background: #45a049;
+      }
+
+      .edit-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+      }
+
+      .edit-modal-content {
+        background: var(--background);
+        padding: 30px;
+        border-radius: 12px;
+        max-width: 500px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+      }
+
+      .edit-modal h3 {
+        color: var(--header-color);
+        margin-top: 0;
+        text-align: center;
+      }
+
+      .edit-modal input,
+      .edit-modal select {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 16px;
+      }
+
+      .edit-modal-buttons {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        margin-top: 20px;
+      }
+
+      .edit-modal button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+
+      .save-btn {
+        background: var(--accent);
+        color: white;
+      }
+
+      .cancel-btn {
+        background: #6c757d;
+        color: white;
+      }
+
+      .theme-palette {
+        display: flex;
+        gap: 5px;
+        margin-top: 5px;
+      }
+
+      .theme-palette div {
+        width: 20px;
+        height: 20px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+      }
+
+      .theme-selected {
+        font-weight: bold;
+        border: 2px solid var(--accent);
+      }
+
+      .color-dot-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 12px;
+      }
+
+      .color-dot-group .dot-label {
+        margin-bottom: 6px;
+        font-size: 14px;
+        font-weight: bold;
+        color: #595959 !important;
+      }
+
+      .dot-label {
+        color: #595959 !important;
+      }
+
+      #themeSelector {
+        color: #595959 !important;
+      }
+
+      #themeSelector > div {
+        color: #595959 !important;
+      }
+
+      .color-dot-group .dot-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .sidebar {
+        width: 340px;
+        padding: 20px;
+        background: var(--background);
+        border-right: 1px solid #ccc;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .sidebar.collapsed {
+        width: 60px;
+        padding: 20px 10px;
+      }
+
+      .sidebar.collapsed > *:not(.toggle-btn) {
+        display: none !important;
+      }
+
+      .sidebar.collapsed h2 {
+        display: none !important;
+      }
+
+      .sidebar.collapsed label {
+        display: none !important;
+      }
+
+      .sidebar.collapsed select {
+        display: none !important;
+      }
+
+      .sidebar.collapsed button:not(.toggle-btn) {
+        display: none !important;
+      }
+
+      .sidebar.collapsed #themeSelector {
+        display: none !important;
+      }
+
+      .sidebar.collapsed .color-dot-group {
+        display: none !important;
+      }
+
+      .toggle-btn {
+        position: absolute;
+        top: 20px;
+        right: 15px;
+        background: var(--accent);
+        color: white;
+        border: none;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+      }
+
+      .toggle-btn:hover {
+        opacity: 0.8;
+      }
+
+      .sidebar.collapsed .toggle-btn {
+        right: 15px;
+      }
+
+      .main-content {
+        flex: 1;
+        padding: 20px;
+        transition: all 0.3s ease;
+      }
+
+      /* Backup section styles */
+      .backup-section {
+        background: var(--card-bg);
+        color: var(--text-color);
+        border-radius: 12px;
+        padding: 20px;
+        margin: 20px auto;
+        max-width: 1000px;
+        text-align: center;
+      }
+
+      .backup-buttons {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: nowrap;
+        margin-top: 15px;
+        overflow-x: auto;
+      }
+
+      .backup-buttons button {
+        padding: 10px 20px;
+        font-size: 14px;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .export-btn {
+        background: #f8f8f8;
+        color: #000000;
+      }
+
+      .export-btn:hover {
+        background-color: var(--accent);
+      }
+
+      .import-btn {
+        background: #f8f8f8;
+        color: #000000;
+      }
+
+      .import-btn:hover {
+        background-color: var(--accent);
+      }
+
+      .reset-btn {
+        background: #f8f8f8;
+        color: #000000;
+      }
+
+      .reset-btn:hover {
+        background-color: var(--accent);
+      }
+
+      #importFile {
+        margin: 10px;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+
+      .status-message {
+        margin: 15px 0;
+        padding: 10px;
+        border-radius: 6px;
+        font-weight: bold;
+      }
+
+      .status-success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+
+      .status-error {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+
+      .status-info {
+        background: #d1ecf1;
+        color: #0c5460;
+        border: 1px solid #bee5eb;
+      }
+
+      @media (max-width: 600px) {
+        form,
+        .link-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .sidebar {
+          width: 280px;
+        }
+
+        .sidebar.collapsed {
+          width: 50px;
+        }
+
+        .search-container {
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        #searchInput {
+          width: 200px !important;
+          max-width: 250px;
+        }
+
+        #searchInput:focus {
+          width: 250px !important;
+        }
+
+        .backup-buttons {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .backup-buttons button {
+          width: 200px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <div style="display: flex; min-height: 100vh">
+      <aside
+        id="sidebar"
+        class="sidebar"
+        role="complementary"
+        aria-label="Theme customization"
+      >
+        <button
+          id="toggleSidebar"
+          class="toggle-btn"
+          title="Toggle Sidebar"
+          aria-label="Toggle theme customization sidebar"
+          aria-expanded="true"
+        >
+          ‹
+        </button>
+
+        <h2>Select Theme</h2>
+        <div
+          id="themeSelector"
+          style="display: flex; flex-direction: column; gap: 10px"
+          role="radiogroup"
+          aria-label="Choose theme"
+        ></div>
+
+        <h2>Map Colors</h2>
+        <div role="group" aria-label="Color mapping options">
+          <label class="dot-label" for="pageBgSelect">Page Background</label>
+          <select
+            id="pageBgSelect"
+            aria-label="Choose page background color"
+          ></select>
+
+          <label class="dot-label" for="cardBgSelect">Card Background</label>
+          <select
+            id="cardBgSelect"
+            aria-label="Choose card background color"
+          ></select>
+
+          <label class="dot-label" for="headerColorSelect">Header Color</label>
+          <select
+            id="headerColorSelect"
+            aria-label="Choose header color"
+          ></select>
+
+          <label class="dot-label" for="textColorSelect">Text Color</label>
+          <select id="textColorSelect" aria-label="Choose text color"></select>
+        </div>
+
+        <button
+          id="saveThemeBtn"
+          style="margin-top: 20px"
+          aria-label="Save current theme customizations"
+        >
+          Save Theme
+        </button>
+      </aside>
+
+      <main class="main-content">
+        <h1>HomeBase</h1>
+
+        <form id="linkForm" role="form" aria-label="Add new bookmark">
+          <label for="linkTitle" class="sr-only">Bookmark title</label>
+          <input
+            type="text"
+            id="linkTitle"
+            placeholder="Title"
+            required
+            aria-describedby="linkTitleHelp"
+          />
+
+          <label for="linkURL" class="sr-only">Bookmark URL</label>
+          <input
+            type="url"
+            id="linkURL"
+            placeholder="https://example.com"
+            required
+            aria-describedby="linkURLHelp"
+          />
+
+          <label for="categorySelect" class="sr-only">Category</label>
+          <select id="categorySelect" required aria-describedby="categoryHelp">
+            <option value="" disabled selected>Choose category</option>
+            <option value="__custom__">+ New category...</option>
+          </select>
+
+          <label for="customCategory" class="sr-only">New category name</label>
+          <input
+            type="text"
+            id="customCategory"
+            placeholder="Enter new category"
+            aria-describedby="customCategoryHelp"
+          />
+
+          <button type="submit" aria-describedby="addButtonHelp">
+            Add Bookmark
+          </button>
+        </form>
+
+        <!-- Hidden help text for screen readers -->
+        <div class="sr-only">
+          <div id="linkTitleHelp">
+            Enter a descriptive title for your bookmark
+          </div>
+          <div id="linkURLHelp">
+            Enter the complete web address including https://
+          </div>
+          <div id="categoryHelp">
+            Choose an existing category or create a new one
+          </div>
+          <div id="customCategoryHelp">
+            Enter the name for your new category
+          </div>
+          <div id="addButtonHelp">Add this bookmark to your collection</div>
+        </div>
+
+        <!-- Search/Filter Section - Minimal and accessible -->
+        <div class="search-container" role="search">
+          <label for="searchInput" class="sr-only">Search your bookmarks</label>
+          <input
+            type="search"
+            id="searchInput"
+            placeholder="🔍 Search your links"
+            aria-label="Search your bookmarks and categories"
+            aria-describedby="searchStats"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <button
+            id="clearSearch"
+            type="button"
+            aria-label="Clear search"
+            title="Clear search (Escape key)"
+          >
+            ×
+          </button>
+        </div>
+
+        <div
+          id="searchStats"
+          class="search-stats"
+          style="display: none"
+          aria-live="polite"
+          aria-atomic="true"
+        ></div>
+
+        <!-- Backup/Export Section -->
+        <section class="backup-section" aria-label="Data backup and management">
+          <h2>Backup Your Data</h2>
+          <div class="backup-buttons">
+            <button id="exportBtn" class="export-btn">Export All Data</button>
+            <input
+              type="file"
+              id="importFile"
+              accept=".json"
+              style="display: none"
+            />
+            <button id="importBtn" class="import-btn">Import Data</button>
+            <button id="resetBtn" class="reset-btn">Reset All Data</button>
+          </div>
+          <div id="statusMessage"></div>
+        </section>
+
+        <div id="categoriesContainer"></div>
+      </main>
+    </div>
+
+    <footer
+      style="
+        text-align: center;
+        padding: 0.5em;
+        background: var(--card-bg);
+        color: #e0e0e0;
+      "
+    >
+      <p>© <span id="currentYear"></span> All Rights Reserved</p>
+      <p>
+        Created by
+        <a
+          href="https://mirabelledoiron.com/"
+          target="_blank"
+          style="color: var(--accent); text-decoration: none"
+          >Mirabelle</a
+        >, customized by you
+      </p>
+      <p style="font-size: 12px; opacity: 0.7">
+        💾 Data saved locally in your browser
+      </p>
+    </footer>
+
+    <script>
+      // Set current year in footer
+      document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("currentYear").textContent =
+          new Date().getFullYear();
+      });
+
+      const themes = {
+        "Minimalist Neutral": {
+          "--primary": "#2E2E2E",
+          "--secondary": "#B0B0B0",
+          "--accent": "#FF6B6B",
+          "--background": "#FFFFFF",
+          "--text": "#1A1A1A",
+        },
+        "Elegant Midnight": {
+          "--primary": "#0D1B2A",
+          "--secondary": "#1B263B",
+          "--accent": "#E0A458",
+          "--background": "#F4F4F4",
+          "--text": "#0D1B2A",
+        },
+        "Soft Pastel": {
+          "--primary": "#A3D2CA",
+          "--secondary": "#F7D9D9",
+          "--accent": "#FFB085",
+          "--background": "#FFFFFF",
+          "--text": "#444444",
+        },
+        "Modern Tech": {
+          "--primary": "#0F4C81",
+          "--secondary": "#1B9AAA",
+          "--accent": "#F5A623",
+          "--background": "#F2F2F2",
+          "--text": "#222222",
+        },
+        "Earthy Organic": {
+          "--primary": "#6A994E",
+          "--secondary": "#A7C957",
+          "--accent": "#BC4749",
+          "--background": "#FDF0D5",
+          "--text": "#1B1B1E",
+        },
+      };
+
+      const mappings = {
+        pageBgSelect: "--page-bg",
+        cardBgSelect: "--card-bg",
+        headerColorSelect: "--header-color",
+        textColorSelect: "--text-color",
+      };
+
+      // Storage wrapper that works with both localStorage and Chrome extension storage
+      const SafeStorage = {
+        setItem: async (key, value) => {
+          try {
+            if (
+              typeof chrome !== "undefined" &&
+              chrome.storage &&
+              chrome.storage.local
+            ) {
+              await chrome.storage.local.set({ [key]: value });
+            } else {
+              localStorage.setItem(key, value);
+            }
+            return true;
+          } catch (e) {
+            console.error("Storage error:", e);
+            showStatus("Storage not available - data may not persist", "error");
+            return false;
+          }
+        },
+
+        getItem: async (key) => {
+          try {
+            if (
+              typeof chrome !== "undefined" &&
+              chrome.storage &&
+              chrome.storage.local
+            ) {
+              const result = await chrome.storage.local.get([key]);
+              return result[key] || null;
+            } else {
+              return localStorage.getItem(key);
+            }
+          } catch (e) {
+            console.error("Storage error:", e);
+            return null;
+          }
+        },
+
+        removeItem: async (key) => {
+          try {
+            if (
+              typeof chrome !== "undefined" &&
+              chrome.storage &&
+              chrome.storage.local
+            ) {
+              await chrome.storage.local.remove([key]);
+            } else {
+              localStorage.removeItem(key);
+            }
+            return true;
+          } catch (e) {
+            console.error("Storage error:", e);
+            return false;
+          }
+        },
+
+        getAllData: async () => {
+          try {
+            if (
+              typeof chrome !== "undefined" &&
+              chrome.storage &&
+              chrome.storage.local
+            ) {
+              return await chrome.storage.local.get(null);
+            } else {
+              const data = {};
+              for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                data[key] = localStorage.getItem(key);
+              }
+              return data;
+            }
+          } catch (e) {
+            console.error("Storage error:", e);
+            return {};
+          }
+        },
+
+        clear: async () => {
+          try {
+            if (
+              typeof chrome !== "undefined" &&
+              chrome.storage &&
+              chrome.storage.local
+            ) {
+              await chrome.storage.local.clear();
+            } else {
+              localStorage.clear();
+            }
+            return true;
+          } catch (e) {
+            console.error("Storage error:", e);
+            return false;
+          }
+        },
+      };
+
+      // Status message display
+      function showStatus(message, type = "info") {
+        const statusDiv = document.getElementById("statusMessage");
+        statusDiv.innerHTML = `<div class="status-message status-${type}">${message}</div>`;
+
+        // Auto-hide success messages after 5 seconds
+        if (type === "success") {
+          setTimeout(() => {
+            statusDiv.innerHTML = "";
+          }, 5000);
+        }
+      }
+
+      // Export functionality
+      function exportData() {
+        try {
+          const allData = SafeStorage.getAllData();
+
+          // Filter only our app's data
+          const appData = {};
+          Object.keys(allData).forEach((key) => {
+            if (
+              key.startsWith("customLinks") ||
+              key.startsWith("customCategories") ||
+              key.startsWith("selectedTheme") ||
+              key.startsWith("--") ||
+              key.startsWith("sidebarCollapsed")
+            ) {
+              appData[key] = allData[key];
+            }
+          });
+
+          const exportData = {
+            timestamp: new Date().toISOString(),
+            version: "1.0.0",
+            appName: "HomeBase",
+            data: appData,
+          };
+
+          const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+            type: "application/json",
+          });
+
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `homebase-backup-${
+            new Date().toISOString().split("T")[0]
+          }.json`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+
+          showStatus("Data exported successfully!", "success");
+        } catch (error) {
+          showStatus(`Export failed: ${error.message}`, "error");
+        }
+      }
+
+      // Import functionality
+      function importData() {
+        const fileInput = document.getElementById("importFile");
+        const file = fileInput.files[0];
+
+        if (!file) {
+          showStatus("Please select a file first", "error");
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          try {
+            const importData = JSON.parse(e.target.result);
+
+            if (!importData.data) {
+              throw new Error("Invalid backup file format");
+            }
+
+            // Import the data
+            Object.entries(importData.data).forEach(([key, value]) => {
+              SafeStorage.setItem(key, value);
+            });
+
+            showStatus(
+              "Data imported successfully! Refreshing page...",
+              "success"
+            );
+
+            // Refresh the page after a short delay
+            setTimeout(() => {
+              window.location.reload();
+            }, 2000);
+          } catch (error) {
+            showStatus(`Import failed: ${error.message}`, "error");
+          }
+        };
+
+        reader.readAsText(file);
+      }
+
+      // Reset functionality
+      function resetAllData() {
+        if (
+          confirm(
+            "This will delete ALL your bookmarks and settings. Are you absolutely sure?"
+          )
+        ) {
+          if (confirm("FINAL WARNING: This cannot be undone. Continue?")) {
+            try {
+              // Clear only our app's data
+              const allKeys = Object.keys(SafeStorage.getAllData());
+              allKeys.forEach((key) => {
+                if (
+                  key.startsWith("customLinks") ||
+                  key.startsWith("customCategories") ||
+                  key.startsWith("selectedTheme") ||
+                  key.startsWith("--") ||
+                  key.startsWith("sidebarCollapsed")
+                ) {
+                  SafeStorage.removeItem(key);
+                }
+              });
+
+              showStatus(
+                "All data cleared successfully! Refreshing page...",
+                "success"
+              );
+
+              setTimeout(() => {
+                window.location.reload();
+              }, 2000);
+            } catch (error) {
+              showStatus(`Reset failed: ${error.message}`, "error");
+            }
+          }
+        }
+      }
+
+      // Search and Filter functionality
+      let currentSearchTerm = "";
+
+      function initSearch() {
+        const searchInput = document.getElementById("searchInput");
+        const clearBtn = document.getElementById("clearSearch");
+
+        searchInput.addEventListener("input", (e) => {
+          currentSearchTerm = e.target.value.toLowerCase().trim();
+          filterLinks();
+          updateSearchStats();
+
+          // Show/hide clear button based on content
+          clearBtn.style.display = currentSearchTerm ? "flex" : "none";
+        });
+
+        clearBtn.addEventListener("click", () => {
+          clearSearch();
+        });
+
+        // Keyboard shortcuts and accessibility
+        searchInput.addEventListener("keydown", (e) => {
+          if (e.key === "Escape") {
+            clearSearch();
+          }
+        });
+
+        // Global keyboard shortcut: Ctrl+F or Cmd+F to focus search
+        document.addEventListener("keydown", (e) => {
+          if ((e.ctrlKey || e.metaKey) && e.key === "f") {
+            e.preventDefault();
+            searchInput.focus();
+          }
+
+          // Escape key globally clears search if search is focused
+          if (e.key === "Escape" && document.activeElement === searchInput) {
+            clearSearch();
+          }
+        });
+
+        // Initialize clear button visibility
+        clearBtn.style.display = "none";
+      }
+
+      function clearSearch() {
+        const searchInput = document.getElementById("searchInput");
+        const clearBtn = document.getElementById("clearSearch");
+
+        searchInput.value = "";
+        currentSearchTerm = "";
+        clearBtn.style.display = "none";
+        filterLinks();
+        updateSearchStats();
+        searchInput.focus();
+      }
+
+      function filterLinks() {
+        const categories = document.querySelectorAll(".category-card");
+        let visibleCategories = 0;
+        let visibleLinks = 0;
+        let totalLinks = 0;
+
+        categories.forEach((category) => {
+          const links = category.querySelectorAll(".link-grid a");
+          let hasVisibleLinks = false;
+
+          links.forEach((link) => {
+            totalLinks++;
+            const title = link.textContent.toLowerCase();
+            const url = link.href.toLowerCase();
+            const categoryName = category
+              .querySelector("h2")
+              .textContent.toLowerCase();
+
+            const isVisible =
+              currentSearchTerm === "" ||
+              title.includes(currentSearchTerm) ||
+              url.includes(currentSearchTerm) ||
+              categoryName.includes(currentSearchTerm);
+
+            if (isVisible) {
+              link.classList.remove("hidden");
+              hasVisibleLinks = true;
+              visibleLinks++;
+              highlightSearchTerm(link, currentSearchTerm);
+            } else {
+              link.classList.add("hidden");
+            }
+          });
+
+          if (hasVisibleLinks || currentSearchTerm === "") {
+            category.classList.remove("hidden");
+            visibleCategories++;
+          } else {
+            category.classList.add("hidden");
+          }
+        });
+
+        // Update search statistics
+        updateSearchStats(visibleLinks, totalLinks, visibleCategories);
+      }
+
+      function highlightSearchTerm(linkElement, searchTerm) {
+        if (!searchTerm) return;
+
+        const titleElement = linkElement.childNodes[0]; // First text node
+        if (titleElement && titleElement.nodeType === Node.TEXT_NODE) {
+          const originalText = titleElement.textContent;
+          const regex = new RegExp(`(${searchTerm})`, "gi");
+          const highlightedText = originalText.replace(
+            regex,
+            '<span class="highlight">$1</span>'
+          );
+
+          if (highlightedText !== originalText) {
+            const tempDiv = document.createElement("div");
+            tempDiv.innerHTML = highlightedText;
+
+            // Replace text node with highlighted content
+            while (tempDiv.firstChild) {
+              titleElement.parentNode.insertBefore(
+                tempDiv.firstChild,
+                titleElement
+              );
+            }
+            titleElement.remove();
+          }
+        }
+      }
+
+      function updateSearchStats(
+        visibleLinks = 0,
+        totalLinks = 0,
+        visibleCategories = 0
+      ) {
+        const statsElement = document.getElementById("searchStats");
+
+        if (currentSearchTerm) {
+          statsElement.style.display = "block";
+          statsElement.textContent = `Found ${visibleLinks} of ${totalLinks} links in ${visibleCategories} categories`;
+        } else {
+          statsElement.style.display = "none";
+        }
+      }
+
+      // Enhanced Drag and Drop functionality
+      let draggedLink = null;
+      let draggedData = null;
+      let draggedFromCategory = null;
+
+      function initDragAndDrop() {
+        // Global drag event listeners
+        document.addEventListener("dragover", (e) => {
+          e.preventDefault(); // Allow drop
+        });
+      }
+
+      function makeElementDraggable(linkElement, linkData) {
+        linkElement.draggable = true;
+
+        // Add drag handle
+        const dragHandle = document.createElement("span");
+        dragHandle.className = "drag-handle";
+        dragHandle.innerHTML = "⋮⋮";
+        dragHandle.setAttribute(
+          "aria-label",
+          `Drag to reorder ${linkData.title}`
+        );
+        dragHandle.title = "Drag to reorder or move to another category";
+        dragHandle.setAttribute("role", "button");
+        dragHandle.setAttribute("tabindex", "0");
+        linkElement.appendChild(dragHandle);
+
+        // Add keyboard support for drag handle
+        dragHandle.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            // Could implement keyboard-based moving here
+            // For now, just inform user to use mouse
+            alert(
+              "Use mouse to drag and drop links. Keyboard reordering coming soon!"
+            );
+          }
+        });
+
+        linkElement.addEventListener("dragstart", (e) => {
+          draggedLink = linkElement;
+          draggedData = { ...linkData }; // Create a copy
+          draggedFromCategory = linkData.category;
+          linkElement.classList.add("dragging");
+
+          // Store data for the drop event
+          e.dataTransfer.effectAllowed = "move";
+          e.dataTransfer.setData("text/plain", JSON.stringify(linkData));
+
+          console.log("Drag started:", linkData.title);
+        });
+
+        linkElement.addEventListener("dragend", (e) => {
+          linkElement.classList.remove("dragging");
+
+          // Clean up all drag-over effects
+          document.querySelectorAll(".link-grid").forEach((grid) => {
+            grid.classList.remove("drag-over");
+          });
+          document.querySelectorAll(".drop-indicator").forEach((indicator) => {
+            indicator.remove();
+          });
+
+          // Reset drag state after a short delay to allow drop event to complete
+          setTimeout(() => {
+            draggedLink = null;
+            draggedData = null;
+            draggedFromCategory = null;
+          }, 100);
+        });
+      }
+
+      function makeGridDroppable(gridElement, category) {
+        gridElement.addEventListener("dragover", (e) => {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = "move";
+
+          if (draggedData) {
+            gridElement.classList.add("drag-over");
+
+            // For same-category drops, show insertion point
+            if (draggedFromCategory === category) {
+              updateDropIndicator(gridElement, e.clientX, e.clientY);
+            } else {
+              // For cross-category drops, show general drop zone
+              const existingIndicator =
+                gridElement.querySelector(".drop-indicator");
+              if (!existingIndicator) {
+                const dropIndicator = document.createElement("div");
+                dropIndicator.className = "drop-indicator";
+                dropIndicator.style.cssText = `
+                grid-column: 1 / -1;
+                height: 4px;
+                background: var(--accent);
+                border-radius: 2px;
+                margin: 8px 0;
+                opacity: 0.7;
+                animation: pulse 1s infinite alternate;
+              `;
+                gridElement.appendChild(dropIndicator);
+              }
+            }
+          }
+        });
+
+        gridElement.addEventListener("dragleave", (e) => {
+          // Only remove styles if we're actually leaving the grid
+          const rect = gridElement.getBoundingClientRect();
+          const isOutside =
+            e.clientX < rect.left ||
+            e.clientX > rect.right ||
+            e.clientY < rect.top ||
+            e.clientY > rect.bottom;
+
+          if (isOutside) {
+            gridElement.classList.remove("drag-over");
+            const indicator = gridElement.querySelector(".drop-indicator");
+            if (indicator) indicator.remove();
+          }
+        });
+
+        gridElement.addEventListener("drop", (e) => {
+          e.preventDefault();
+          gridElement.classList.remove("drag-over");
+
+          // Remove drop indicator
+          const indicator = gridElement.querySelector(".drop-indicator");
+          if (indicator) indicator.remove();
+
+          if (draggedData && draggedData.title) {
+            console.log(
+              `Dropping "${draggedData.title}" into "${category}" category`
+            );
+
+            // Find the original link index
+            const originalIndex = savedLinks.findIndex(
+              (link) =>
+                link.title === draggedData.title &&
+                link.url === draggedData.url &&
+                link.category === draggedData.category
+            );
+
+            if (originalIndex !== -1) {
+              // Remove the original link
+              const linkToMove = savedLinks.splice(originalIndex, 1)[0];
+
+              // Update category
+              linkToMove.category = category;
+
+              if (draggedFromCategory === category) {
+                // Same category - calculate insertion position
+                const insertIndex = calculateInsertionIndex(
+                  gridElement,
+                  e.clientX,
+                  e.clientY,
+                  category
+                );
+
+                // Find the actual index in the full savedLinks array
+                const categoryStartIndex = savedLinks.findIndex(
+                  (link) => link.category === category
+                );
+                const actualInsertIndex =
+                  categoryStartIndex === -1
+                    ? savedLinks.length
+                    : categoryStartIndex + insertIndex;
+
+                savedLinks.splice(actualInsertIndex, 0, linkToMove);
+                console.log(
+                  `Reordered within "${category}" at position ${insertIndex}`
+                );
+              } else {
+                // Different category - add at the end of that category
+                const categoryLinks = savedLinks.filter(
+                  (link) => link.category === category
+                );
+                const lastCategoryIndex = savedLinks
+                  .map((link) => link.category)
+                  .lastIndexOf(category);
+                const insertIndex =
+                  lastCategoryIndex === -1
+                    ? savedLinks.length
+                    : lastCategoryIndex + 1;
+
+                savedLinks.splice(insertIndex, 0, linkToMove);
+                console.log(
+                  `Moved from "${draggedFromCategory}" to "${category}"`
+                );
+              }
+
+              // Save and re-render
+              SafeStorage.setItem(
+                "customLinksWithCategories",
+                JSON.stringify(savedLinks)
+              );
+              renderLinks();
+            } else {
+              console.error("Could not find original link to move");
+            }
+          }
+        });
+      }
+
+      function updateDropIndicator(gridElement, mouseX, mouseY) {
+        // Remove existing indicator
+        const existingIndicator = gridElement.querySelector(".drop-indicator");
+        if (existingIndicator) existingIndicator.remove();
+
+        // Find the best insertion point
+        const links = Array.from(gridElement.children).filter(
+          (child) =>
+            child.tagName === "DIV" &&
+            !child.classList.contains("drop-indicator")
+        );
+
+        let insertBefore = null;
+        let minDistance = Infinity;
+
+        // Calculate distances to each link
+        links.forEach((link) => {
+          const rect = link.getBoundingClientRect();
+          const linkCenterX = rect.left + rect.width / 2;
+          const linkCenterY = rect.top + rect.height / 2;
+
+          const distance = Math.sqrt(
+            Math.pow(mouseX - linkCenterX, 2) +
+              Math.pow(mouseY - linkCenterY, 2)
+          );
+
+          if (distance < minDistance) {
+            minDistance = distance;
+            // Determine if we should insert before or after this link
+            const isLeftSide = mouseX < linkCenterX;
+            const isTopSide = mouseY < linkCenterY;
+
+            if (isLeftSide || isTopSide) {
+              insertBefore = link;
+            } else {
+              insertBefore = link.nextElementSibling;
+            }
+          }
+        });
+
+        // Create and insert the drop indicator
+        const dropIndicator = document.createElement("div");
+        dropIndicator.className = "drop-indicator";
+        dropIndicator.style.cssText = `
+        width: 4px;
+        height: 100%;
+        background: var(--accent);
+        border-radius: 2px;
+        opacity: 0.8;
+        animation: pulse 1s infinite alternate;
+        pointer-events: none;
+        z-index: 100;
+      `;
+
+        if (insertBefore) {
+          gridElement.insertBefore(dropIndicator, insertBefore);
+        } else {
+          gridElement.appendChild(dropIndicator);
+        }
+      }
+
+      function calculateInsertionIndex(gridElement, mouseX, mouseY, category) {
+        const links = Array.from(gridElement.children).filter(
+          (child) =>
+            child.tagName === "DIV" &&
+            !child.classList.contains("drop-indicator")
+        );
+
+        if (links.length === 0) return 0;
+
+        let insertIndex = links.length; // Default to end
+        let minDistance = Infinity;
+
+        links.forEach((link, index) => {
+          const rect = link.getBoundingClientRect();
+          const linkCenterX = rect.left + rect.width / 2;
+          const linkCenterY = rect.top + rect.height / 2;
+
+          const distance = Math.sqrt(
+            Math.pow(mouseX - linkCenterX, 2) +
+              Math.pow(mouseY - linkCenterY, 2)
+          );
+
+          if (distance < minDistance) {
+            minDistance = distance;
+            // Determine if we should insert before or after this link
+            const isLeftSide = mouseX < linkCenterX;
+            const isTopSide = mouseY < linkCenterY;
+
+            if (isLeftSide || isTopSide) {
+              insertIndex = index;
+            } else {
+              insertIndex = index + 1;
+            }
+          }
+        });
+
+        return Math.max(0, Math.min(insertIndex, links.length));
+      }
+
+      function applyTheme(theme) {
+        const vars = themes[theme];
+        for (const key in vars) {
+          document.documentElement.style.setProperty(key, vars[key]);
+        }
+        SafeStorage.setItem("selectedTheme", theme);
+        populateMappingOptions(vars);
+      }
+
+      function populateMappingOptions(themeVars) {
+        // First, remove ALL existing color-dot-group elements and restore original labels
+        document
+          .querySelectorAll(".color-dot-group")
+          .forEach((group) => group.remove());
+
+        // Restore all original labels to be visible
+        document.querySelectorAll(".dot-label").forEach((label) => {
+          label.style.display = "";
+        });
+
+        Object.entries(mappings).forEach(([selectId, cssVar]) => {
+          const select = document.getElementById(selectId);
+          const label = select.previousElementSibling;
+
+          const group = document.createElement("div");
+          group.className = "color-dot-group";
+
+          // Don't hide the original label - just clone it
+          const labelClone = label.cloneNode(true);
+          select.style.display = "none";
+          group.appendChild(labelClone);
+
+          const row = document.createElement("div");
+          row.className = "dot-row";
+
+          Object.entries(themeVars).forEach(([key, val]) => {
+            const dot = document.createElement("div");
+            dot.style.width = "20px";
+            dot.style.height = "20px";
+            dot.style.borderRadius = "50%";
+            dot.style.backgroundColor = val;
+            dot.style.border = "1px solid #ccc";
+            dot.style.cursor = "pointer";
+            dot.title = key.replace("--", "");
+            dot.setAttribute("data-color-value", val);
+            dot.setAttribute("data-css-var", cssVar);
+
+            row.appendChild(dot);
+          });
+
+          group.appendChild(row);
+          label.parentNode.insertBefore(group, select.nextSibling);
+
+          // Now hide the original label since we have the clone
+          label.style.display = "none";
+        });
+      }
+
+      function renderThemeSelector() {
+        const container = document.getElementById("themeSelector");
+        container.innerHTML = "";
+        Object.entries(themes).forEach(([name, vars]) => {
+          const wrapper = document.createElement("div");
+          wrapper.style.cursor = "pointer";
+          wrapper.style.padding = "6px";
+          wrapper.style.border = "1px solid #ccc";
+          wrapper.style.borderRadius = "6px";
+          wrapper.setAttribute("data-theme", name);
+          wrapper.setAttribute("data-action", "select-theme");
+
+          const label = document.createElement("div");
+          label.textContent = name;
+          wrapper.appendChild(label);
+
+          const palette = document.createElement("div");
+          palette.className = "theme-palette";
+          Object.values(vars).forEach((color) => {
+            const swatch = document.createElement("div");
+            swatch.style.background = color;
+            palette.appendChild(swatch);
+          });
+
+          wrapper.appendChild(palette);
+          container.appendChild(wrapper);
+        });
+      }
+
+      function highlightTheme(name) {
+        document.querySelectorAll("#themeSelector > div").forEach((div) => {
+          div.classList.toggle(
+            "theme-selected",
+            div.getAttribute("data-theme") === name
+          );
+        });
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll("select").forEach((select) => {
+          select.addEventListener("change", () => {
+            Object.entries(mappings).forEach(([selectId, cssVar]) => {
+              const val = document.getElementById(selectId).value;
+              document.documentElement.style.setProperty(cssVar, val);
+              SafeStorage.setItem(cssVar, val);
+            });
+            renderLinks();
+          });
+        });
+      });
+
+      async function restoreMappings() {
+        for (const [id, varName] of Object.entries(mappings)) {
+          const val = await SafeStorage.getItem(varName);
+          if (val) document.documentElement.style.setProperty(varName, val);
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        document
+          .getElementById("saveThemeBtn")
+          .addEventListener("click", () => {
+            const currentTheme = { name: "Custom Theme", colors: {} };
+            for (const [selectId, cssVar] of Object.entries(mappings)) {
+              const val = document.getElementById(selectId).value;
+              currentTheme.colors[cssVar] = val;
+              SafeStorage.setItem(cssVar, val);
+            }
+            SafeStorage.setItem("customTheme", JSON.stringify(currentTheme));
+            const btn = document.getElementById("saveThemeBtn");
+            const originalText = btn.textContent;
+            btn.textContent = "Theme Saved!";
+            btn.style.backgroundColor = "#4CAF50";
+            setTimeout(() => {
+              btn.textContent = originalText;
+              btn.style.backgroundColor = "";
+            }, 2000);
+          });
+      });
+
+      const form = document.getElementById("linkForm");
+      const container = document.getElementById("categoriesContainer");
+      const categorySelect = document.getElementById("categorySelect");
+      const customCategoryInput = document.getElementById("customCategory");
+      let savedLinks = [];
+      let savedCategories = [];
+
+      // Initialize data from storage
+      async function initializeData() {
+        const linksData = await SafeStorage.getItem(
+          "customLinksWithCategories"
+        );
+        const categoriesData = await SafeStorage.getItem("customCategories");
+
+        savedLinks = linksData ? JSON.parse(linksData) : [];
+        savedCategories = categoriesData ? JSON.parse(categoriesData) : [];
+      }
+
+      function updateCategoryOptions() {
+        categorySelect.innerHTML =
+          '<option value="" disabled selected>Choose category</option>';
+        savedCategories.forEach((cat) =>
+          categorySelect.appendChild(new Option(cat, cat))
+        );
+        categorySelect.appendChild(
+          new Option("+ New category...", "__custom__")
+        );
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        categorySelect.addEventListener("change", () => {
+          customCategoryInput.style.display =
+            categorySelect.value === "__custom__" ? "block" : "none";
+          customCategoryInput.required = categorySelect.value === "__custom__";
+        });
+
+        form.addEventListener("submit", function (e) {
+          e.preventDefault();
+          const title = document.getElementById("linkTitle").value.trim();
+          const url = document.getElementById("linkURL").value.trim();
+          let category = categorySelect.value;
+          if (category === "__custom__") {
+            category = customCategoryInput.value.trim();
+            if (category && !savedCategories.includes(category)) {
+              savedCategories.push(category);
+              SafeStorage.setItem(
+                "customCategories",
+                JSON.stringify(savedCategories)
+              );
+              updateCategoryOptions();
+            }
+          }
+
+          if (title && url && category) {
+            savedLinks.push({ title, url, category });
+            SafeStorage.setItem(
+              "customLinksWithCategories",
+              JSON.stringify(savedLinks)
+            );
+            renderLinks();
+            form.reset();
+            customCategoryInput.style.display = "none";
+            updateCategoryOptions();
+          }
+        });
+
+        // Backup button event listeners
+        document
+          .getElementById("exportBtn")
+          .addEventListener("click", exportData);
+        document.getElementById("importBtn").addEventListener("click", () => {
+          document.getElementById("importFile").click();
+        });
+        document
+          .getElementById("importFile")
+          .addEventListener("change", importData);
+        document
+          .getElementById("resetBtn")
+          .addEventListener("click", resetAllData);
+      });
+
+      function groupLinksByCategory(links) {
+        const grouped = {};
+        links.forEach((link) => {
+          (grouped[link.category] = grouped[link.category] || []).push(link);
+        });
+        return grouped;
+      }
+
+      function renderLinks() {
+        container.innerHTML = "";
+        const grouped = groupLinksByCategory(savedLinks);
+        Object.entries(grouped).forEach(([category, links]) => {
+          const card = document.createElement("section");
+          card.className = "category-card";
+          card.setAttribute(
+            "aria-label",
+            `${category} category with ${links.length} links`
+          );
+
+          // Create category header with edit and delete buttons
+          const headerDiv = document.createElement("div");
+          headerDiv.className = "category-header";
+
+          const h2 = document.createElement("h2");
+          h2.textContent = category;
+          h2.id = `category-${category.replace(/\s+/g, "-").toLowerCase()}`;
+          headerDiv.appendChild(h2);
+
+          const editCategoryBtn = document.createElement("button");
+          editCategoryBtn.className = "edit-category";
+          editCategoryBtn.innerHTML = "✎";
+          editCategoryBtn.setAttribute(
+            "aria-label",
+            `Edit category: ${category}`
+          );
+          editCategoryBtn.title = `Edit "${category}" category name`;
+          editCategoryBtn.setAttribute("data-action", "edit-category");
+          editCategoryBtn.setAttribute("data-category", category);
+          headerDiv.appendChild(editCategoryBtn);
+
+          const deleteCategoryBtn = document.createElement("button");
+          deleteCategoryBtn.className = "delete-category";
+          deleteCategoryBtn.innerHTML = "×";
+          deleteCategoryBtn.setAttribute(
+            "aria-label",
+            `Delete category: ${category}`
+          );
+          deleteCategoryBtn.title = `Delete "${category}" category`;
+          deleteCategoryBtn.setAttribute("data-action", "delete-category");
+          deleteCategoryBtn.setAttribute("data-category", category);
+          headerDiv.appendChild(deleteCategoryBtn);
+
+          card.appendChild(headerDiv);
+
+          const grid = document.createElement("div");
+          grid.className = "link-grid";
+          grid.setAttribute("role", "list");
+          grid.setAttribute(
+            "aria-labelledby",
+            `category-${category.replace(/\s+/g, "-").toLowerCase()}`
+          );
+
+          // Make grid droppable for drag and drop
+          makeGridDroppable(grid, category);
+
+          links.forEach((link, linkIndex) => {
+            const linkWrapper = document.createElement("div");
+            linkWrapper.style.position = "relative";
+
+            const a = document.createElement("a");
+            a.href = link.url;
+            a.target = "_blank";
+            a.rel = "noopener noreferrer";
+            a.textContent = link.title;
+
+            // Make link draggable
+            makeElementDraggable(a, link);
+
+            const editLinkBtn = document.createElement("button");
+            editLinkBtn.className = "edit-link";
+            editLinkBtn.innerHTML = "✎";
+            editLinkBtn.title = `Edit "${link.title}"`;
+            editLinkBtn.setAttribute("data-action", "edit-link");
+            editLinkBtn.setAttribute("data-link-title", link.title);
+            editLinkBtn.setAttribute("data-link-url", link.url);
+            editLinkBtn.setAttribute("data-link-category", link.category);
+
+            const deleteLinkBtn = document.createElement("button");
+            deleteLinkBtn.className = "delete-link";
+            deleteLinkBtn.innerHTML = "×";
+            deleteLinkBtn.title = `Delete "${link.title}"`;
+            deleteLinkBtn.setAttribute("data-action", "delete-link");
+            deleteLinkBtn.setAttribute("data-link-title", link.title);
+            deleteLinkBtn.setAttribute("data-link-url", link.url);
+            deleteLinkBtn.setAttribute("data-link-category", link.category);
+
+            a.appendChild(editLinkBtn);
+            a.appendChild(deleteLinkBtn);
+            linkWrapper.appendChild(a);
+            grid.appendChild(linkWrapper);
+          });
+
+          card.appendChild(grid);
+          container.appendChild(card);
+        });
+
+        // Apply current search filter after rendering
+        if (currentSearchTerm) {
+          filterLinks();
+        }
+      }
+
+      function editLink(linkToEdit) {
+        const modal = document.createElement("div");
+        modal.className = "edit-modal";
+
+        modal.innerHTML = `
+        <div class="edit-modal-content">
+          <h3>Edit Link</h3>
+          <input type="text" id="editLinkTitle" placeholder="Title" value="${
+            linkToEdit.title
+          }" />
+          <input type="url" id="editLinkURL" placeholder="https://example.com" value="${
+            linkToEdit.url
+          }" />
+          <select id="editLinkCategory">
+            ${savedCategories
+              .map(
+                (cat) =>
+                  `<option value="${cat}" ${
+                    cat === linkToEdit.category ? "selected" : ""
+                  }>${cat}</option>`
+              )
+              .join("")}
+          </select>
+          <div class="edit-modal-buttons">
+            <button class="cancel-btn" data-action="close-modal">Cancel</button>
+            <button class="save-btn" data-action="save-link" data-original-title="${
+              linkToEdit.title
+            }" data-original-url="${linkToEdit.url}" data-original-category="${
+          linkToEdit.category
+        }">Save</button>
+          </div>
+        </div>
+      `;
+
+        document.body.appendChild(modal);
+        document.getElementById("editLinkTitle").focus();
+
+        // Close modal when clicking outside
+        modal.addEventListener("click", (e) => {
+          if (e.target === modal) closeEditModal();
+        });
+
+        // Close modal with Escape key
+        const escapeHandler = (e) => {
+          if (e.key === "Escape") {
+            closeEditModal();
+            document.removeEventListener("keydown", escapeHandler);
+          }
+        };
+        document.addEventListener("keydown", escapeHandler);
+
+        // Save with Enter key (when not in select)
+        modal.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" && e.target.tagName !== "SELECT") {
+            const originalTitle = modal
+              .querySelector('[data-action="save-link"]')
+              .getAttribute("data-original-title");
+            const originalUrl = modal
+              .querySelector('[data-action="save-link"]')
+              .getAttribute("data-original-url");
+            const originalCategory = modal
+              .querySelector('[data-action="save-link"]')
+              .getAttribute("data-original-category");
+            saveEditedLink(originalTitle, originalUrl, originalCategory);
+          }
+        });
+      }
+
+      function saveEditedLink(originalTitle, originalUrl, originalCategory) {
+        const newTitle = document.getElementById("editLinkTitle").value.trim();
+        const newUrl = document.getElementById("editLinkURL").value.trim();
+        const newCategory = document.getElementById("editLinkCategory").value;
+
+        if (!newTitle || !newUrl || !newCategory) {
+          alert("Please fill in all fields");
+          return;
+        }
+
+        // Find and update the link
+        const linkIndex = savedLinks.findIndex(
+          (link) =>
+            link.title === originalTitle &&
+            link.url === originalUrl &&
+            link.category === originalCategory
+        );
+
+        if (linkIndex !== -1) {
+          savedLinks[linkIndex] = {
+            title: newTitle,
+            url: newUrl,
+            category: newCategory,
+          };
+
+          SafeStorage.setItem(
+            "customLinksWithCategories",
+            JSON.stringify(savedLinks)
+          );
+          renderLinks();
+          closeEditModal();
+        }
+      }
+
+      function editCategory(categoryToEdit) {
+        const newCategoryName = prompt(
+          `Rename category "${categoryToEdit}" to:`,
+          categoryToEdit
+        );
+
+        if (
+          newCategoryName &&
+          newCategoryName.trim() &&
+          newCategoryName.trim() !== categoryToEdit
+        ) {
+          const trimmedName = newCategoryName.trim();
+
+          // Check if new name already exists
+          if (savedCategories.includes(trimmedName)) {
+            alert("A category with that name already exists");
+            return;
+          }
+
+          // Update all links in this category
+          savedLinks = savedLinks.map((link) => {
+            if (link.category === categoryToEdit) {
+              return { ...link, category: trimmedName };
+            }
+            return link;
+          });
+
+          // Update saved categories
+          const categoryIndex = savedCategories.indexOf(categoryToEdit);
+          if (categoryIndex !== -1) {
+            savedCategories[categoryIndex] = trimmedName;
+          }
+
+          SafeStorage.setItem(
+            "customLinksWithCategories",
+            JSON.stringify(savedLinks)
+          );
+          SafeStorage.setItem(
+            "customCategories",
+            JSON.stringify(savedCategories)
+          );
+
+          updateCategoryOptions();
+          renderLinks();
+        }
+      }
+
+      function closeEditModal() {
+        const modal = document.querySelector(".edit-modal");
+        if (modal) {
+          modal.remove();
+        }
+      }
+
+      function deleteLink(linkToDelete) {
+        if (
+          confirm(`Are you sure you want to delete "${linkToDelete.title}"?`)
+        ) {
+          savedLinks = savedLinks.filter(
+            (link) =>
+              !(
+                link.title === linkToDelete.title &&
+                link.url === linkToDelete.url &&
+                link.category === linkToDelete.category
+              )
+          );
+          SafeStorage.setItem(
+            "customLinksWithCategories",
+            JSON.stringify(savedLinks)
+          );
+          renderLinks();
+        }
+      }
+
+      function deleteCategory(categoryToDelete) {
+        const linksInCategory = savedLinks.filter(
+          (link) => link.category === categoryToDelete
+        );
+        const confirmMessage = `Are you sure you want to delete the "${categoryToDelete}" category and all ${linksInCategory.length} links in it?`;
+
+        if (confirm(confirmMessage)) {
+          // Remove all links in this category
+          savedLinks = savedLinks.filter(
+            (link) => link.category !== categoryToDelete
+          );
+
+          // Remove category from saved categories
+          savedCategories = savedCategories.filter(
+            (cat) => cat !== categoryToDelete
+          );
+
+          SafeStorage.setItem(
+            "customLinksWithCategories",
+            JSON.stringify(savedLinks)
+          );
+          SafeStorage.setItem(
+            "customCategories",
+            JSON.stringify(savedCategories)
+          );
+
+          updateCategoryOptions();
+          renderLinks();
+        }
+      }
+
+      // Event delegation for dynamically created buttons
+      document.addEventListener("click", function (e) {
+        const action =
+          e.target.getAttribute("data-action") ||
+          e.target.closest("[data-action]")?.getAttribute("data-action");
+
+        if (action === "edit-category") {
+          e.preventDefault();
+          const category = e.target.getAttribute("data-category");
+          editCategory(category);
+        } else if (action === "delete-category") {
+          e.preventDefault();
+          const category = e.target.getAttribute("data-category");
+          deleteCategory(category);
+        } else if (action === "edit-link") {
+          e.preventDefault();
+          e.stopPropagation();
+          const linkData = {
+            title: e.target.getAttribute("data-link-title"),
+            url: e.target.getAttribute("data-link-url"),
+            category: e.target.getAttribute("data-link-category"),
+          };
+          editLink(linkData);
+        } else if (action === "delete-link") {
+          e.preventDefault();
+          e.stopPropagation();
+          const linkData = {
+            title: e.target.getAttribute("data-link-title"),
+            url: e.target.getAttribute("data-link-url"),
+            category: e.target.getAttribute("data-link-category"),
+          };
+          deleteLink(linkData);
+        } else if (action === "close-modal") {
+          e.preventDefault();
+          closeEditModal();
+        } else if (action === "save-link") {
+          e.preventDefault();
+          const originalTitle = e.target.getAttribute("data-original-title");
+          const originalUrl = e.target.getAttribute("data-original-url");
+          const originalCategory = e.target.getAttribute(
+            "data-original-category"
+          );
+          saveEditedLink(originalTitle, originalUrl, originalCategory);
+        } else if (action === "select-theme") {
+          const themeElement = e.target.closest("[data-theme]");
+          if (themeElement) {
+            const themeName = themeElement.getAttribute("data-theme");
+            applyTheme(themeName);
+            highlightTheme(themeName);
+            renderLinks();
+          }
+        } else if (e.target.hasAttribute("data-color-value")) {
+          // Handle color dot clicks
+          const colorValue = e.target.getAttribute("data-color-value");
+          const cssVar = e.target.getAttribute("data-css-var");
+          document.documentElement.style.setProperty(cssVar, colorValue);
+          SafeStorage.setItem(cssVar, colorValue);
+          renderLinks();
+        }
+      });
+
+      // Sidebar toggle functionality
+      const sidebar = document.getElementById("sidebar");
+      const toggleBtn = document.getElementById("toggleSidebar");
+
+      function toggleSidebar() {
+        const isCollapsed = sidebar.classList.contains("collapsed");
+
+        if (isCollapsed) {
+          sidebar.classList.remove("collapsed");
+          toggleBtn.textContent = "‹";
+          toggleBtn.title = "Collapse Sidebar";
+          toggleBtn.setAttribute("aria-expanded", "true");
+          SafeStorage.setItem("sidebarCollapsed", "false");
+        } else {
+          sidebar.classList.add("collapsed");
+          toggleBtn.textContent = "›";
+          toggleBtn.title = "Expand Sidebar";
+          toggleBtn.setAttribute("aria-expanded", "false");
+          SafeStorage.setItem("sidebarCollapsed", "true");
+        }
+      }
+
+      // Restore sidebar state
+      async function restoreSidebarState() {
+        const isCollapsed =
+          (await SafeStorage.getItem("sidebarCollapsed")) === "true";
+        if (isCollapsed) {
+          sidebar.classList.add("collapsed");
+          toggleBtn.textContent = "›";
+          toggleBtn.title = "Expand Sidebar";
+          toggleBtn.setAttribute("aria-expanded", "false");
+        } else {
+          toggleBtn.setAttribute("aria-expanded", "true");
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        toggleBtn.addEventListener("click", toggleSidebar);
+      });
+
+      // Initialize everything
+      async function initialize() {
+        await initializeData();
+
+        const savedTheme =
+          (await SafeStorage.getItem("selectedTheme")) || "Elegant Midnight";
+
+        renderThemeSelector();
+        applyTheme(savedTheme);
+        highlightTheme(savedTheme);
+        await restoreMappings();
+        await restoreSidebarState();
+        updateCategoryOptions();
+        renderLinks();
+        initSearch();
+        initDragAndDrop();
+
+        console.log(
+          "Standalone HomeBase loaded - data saved in localStorage"
+        );
+      }
+
+      // Start the application when DOM is loaded
+      document.addEventListener("DOMContentLoaded", initialize);
+    </script>
+  </body>
+</html>

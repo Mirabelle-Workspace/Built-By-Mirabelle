@@ -1,0 +1,33 @@
+{
+    "manifest_version": 3,
+    "name": "HomeBase",
+    "version": "1.0.3",
+    "description": "A beautiful, customizable HomeBase that replaces your new tab with organized bookmarks, themes, and search functionality.",
+    "chrome_url_overrides": {
+        "newtab": "index.html"
+    },
+    "web_accessible_resources": [
+        {
+            "resources": ["recovery.html"],
+            "matches": ["<all_urls>"]
+        }
+    ],
+    "permissions": [
+        "storage"
+    ],
+    "icons": {
+        "16": "assets/icon-grid-128.png",
+        "48": "assets/icon-grid-128.png",
+        "128": "assets/icon-grid-128.png"
+    },
+    "action": {
+        "default_title": "HomeBase Settings"
+    },
+    "background": {
+        "service_worker": "background.js"
+    },
+    "author": "Mirabelle Doiron",
+    "homepage_url": "https://builtbymirabelle.com/products/homebase",
+    "offline_enabled": true,
+    "incognito": "spanning"
+}

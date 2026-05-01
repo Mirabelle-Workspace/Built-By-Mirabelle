@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HomeBase - Data Recovery</title>
+    <style>
+      :root {
+        --primary: #0d1b2a;
+        --secondary: #1b263b;
+        --accent: #e0a458;
+        --background: #f4f4f4;
+        --text: #0d1b2a;
+        --danger: #ff3b30;
+
+        --font-family: Helvetica, sans-serif;
+
+        --page-bg: var(--primary);
+        --card-bg: var(--secondary);
+        --header-color: var(--accent);
+        --text-color: var(--text);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        font-family: var(--font-family);
+        background-color: var(--page-bg);
+        color: var(--text-color);
+      }
+
+      body {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      .container {
+        background: var(--card-bg);
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        margin: 20px auto;
+      }
+
+      h1,
+      h2,
+      h3 {
+        text-align: left;
+        color: var(--header-color);
+        margin-bottom: 20px;
+      }
+
+      h1 {
+        margin-bottom: 30px;
+        text-align: center;
+      }
+
+      h2 {
+        border-bottom: 2px solid var(--background);
+        padding-bottom: 10px;
+        margin-top: 30px;
+      }
+
+      h3 {
+        margin-top: 20px;
+      }
+
+      p {
+        text-align: left;
+        line-height: 1.6;
+        margin-bottom: 15px;
+      }
+
+      .status {
+        padding: 15px;
+        border-radius: 6px;
+        margin: 15px 0;
+        font-weight: bold;
+        text-align: left;
+      }
+
+      .success {
+        background: var(--background);
+        color: var(--text);
+        border: 1px solid var(--accent);
+      }
+
+      .error {
+        background: var(--background);
+        color: var(--danger);
+        border: 1px solid #f5c6cb;
+      }
+
+      .info {
+        background: var(--background);
+        color: var(--text);
+        border: 1px solid #bee5eb;
+      }
+
+      button {
+        background-color: var(--accent);
+        color: var(--background);
+        border: none;
+        padding: 12px 24px;
+        border-radius: 6px;
+        cursor: pointer;
+        margin: 5px 5px 5px 0;
+        font-size: 16px;
+        text-align: left;
+        transition: all 0.2s ease;
+      }
+
+      button:hover {
+        opacity: 0.9;
+      }
+
+      .danger {
+        background: var(--danger);
+      }
+
+      .danger:hover {
+        background: var(--danger);
+      }
+
+      .success-btn {
+        background: var(--background);
+        color: var(--text);
+      }
+
+      .success-btn:hover {
+        background: var(--background);
+        color: var(--text);
+      }
+
+      pre {
+        background: var(--background);
+        padding: 15px;
+        border-radius: 6px;
+        overflow-x: auto;
+        max-height: 400px;
+        border: 1px solid #e9ecef;
+        text-align: left;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .link-count {
+        font-size: 18px;
+        font-weight: bold;
+        color: var(--text);
+        text-align: left;
+        margin: 20px 0;
+      }
+
+      ul,
+      ol {
+        text-align: left;
+        padding-left: 20px;
+      }
+
+      li {
+        margin-bottom: 10px;
+        line-height: 1.6;
+      }
+
+      code {
+        background: var(--background);
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+      }
+
+      input[type="file"] {
+        margin: 10px 0;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background: var(--background);
+        color: var(--text-color);
+      }
+
+      /* Focus indicators for accessibility */
+      button:focus,
+      input:focus,
+      select:focus,
+      a:focus {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+
+      /* High contrast mode support */
+      @media (prefers-contrast: high) {
+        button {
+          border: 2px solid #000;
+        }
+      }
+
+      /* Reduced motion support */
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>HomeBase - Data Recovery</h1>
+
+      <div id="extensionStatus" class="status info">
+        Checking extension status...
+      </div>
+
+      <h2>Current Data Status</h2>
+      <button onclick="checkStoredData()">Check Stored Data</button>
+      <button onclick="showRawData()">Show Raw Data</button>
+
+      <div id="dataStatus"></div>
+      <div id="rawData" class="hidden"></div>
+
+      <h2>Export Your Data</h2>
+      <p style="color: var(--accent)">
+        Download a backup file with all your bookmarks and settings:
+      </p>
+      <button onclick="exportData()" class="success-btn">
+        Export All Data
+      </button>
+
+      <h2>Import Data</h2>
+      <p style="color: var(--accent)">Restore from a backup file:</p>
+      <input
+        type="file"
+        id="importFile"
+        accept=".json"
+        style="margin: 10px 0"
+      />
+      <button onclick="importData()">Import Data</button>
+
+      <h2>Recovery Options</h2>
+      <button onclick="goToHomeBase()">Go to HomeBase</button>
+      <button onclick="openExtensionPage()">Open Extension Recovery</button>
+      <button onclick="resetAllData()" class="danger">
+        Reset All Data (Careful!)
+      </button>
+
+      <h2>Manual Recovery Instructions</h2>
+      <div class="status info">
+        <h3>If the above doesn't work, try these manual steps:</h3>
+        <ol>
+          <li>
+            <strong>Chrome Extension Method:</strong>
+            <ul>
+              <li>Go to <code>chrome://extensions/</code></li>
+              <li>Find "HomeBase" extension</li>
+              <li>
+                Click "Inspect views: service worker" or "background page"
+              </li>
+              <li>
+                In the console, type:
+                <code>chrome.storage.local.get(null, console.log)</code>
+              </li>
+              <li>Look for "customLinksWithCategories" in the output</li>
+            </ul>
+          </li>
+          <li>
+            <strong>Browser Storage Method:</strong>
+            <ul>
+              <li>Open any webpage and press F12</li>
+              <li>Go to "Application" tab → "Local Storage"</li>
+              <li>Look for entries starting with "customLinks"</li>
+            </ul>
+          </li>
+          <li>
+            <strong>Extension Recovery URL:</strong>
+            <ul>
+              <li>
+                Try:
+                <code>chrome-extension://[extension-id]/recovery.html</code>
+              </li>
+              <li>Replace [extension-id] with your actual extension ID</li>
+            </ul>
+          </li>
+        </ol>
+      </div>
+
+      <div id="results"></div>
+    </div>
+
+    <script>
+      // Check if we're running as a Chrome extension
+      const isExtension =
+        typeof chrome !== "undefined" && chrome.storage && chrome.storage.local;
+
+      // Safe storage wrapper (same as in main script)
+      const SafeStorage = {
+        setItem: async (key, value) => {
+          if (isExtension) {
+            await chrome.storage.local.set({ [key]: value });
+          } else {
+            try {
+              localStorage.setItem(key, value);
+            } catch (e) {
+              console.error("localStorage not available:", e);
+            }
+          }
+        },
+        getItem: async (key) => {
+          if (isExtension) {
+            const result = await chrome.storage.local.get([key]);
+            return result[key] || null;
+          } else {
+            try {
+              return localStorage.getItem(key);
+            } catch (e) {
+              console.error("localStorage not available:", e);
+              return null;
+            }
+          }
+        },
+        getAllData: async () => {
+          if (isExtension) {
+            return await chrome.storage.local.get(null);
+          } else {
+            try {
+              const data = {};
+              for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                data[key] = localStorage.getItem(key);
+              }
+              return data;
+            } catch (e) {
+              console.error("localStorage not available:", e);
+              return {};
+            }
+          }
+        },
+        clear: async () => {
+          if (isExtension) {
+            await chrome.storage.local.clear();
+          } else {
+            try {
+              localStorage.clear();
+            } catch (e) {
+              console.error("localStorage not available:", e);
+            }
+          }
+        },
+      };
+
+      // Check extension status on load
+      document.addEventListener("DOMContentLoaded", () => {
+        const statusDiv = document.getElementById("extensionStatus");
+        if (isExtension) {
+          statusDiv.className = "status success";
+          statusDiv.textContent =
+            "Running as Chrome Extension - Full storage access available";
+        } else {
+          statusDiv.className = "status error";
+          statusDiv.innerHTML = `
+                    Not running as extension - Limited access<br>
+                    <small>To access your extension data, you need to open this page through the Chrome extension.</small>
+                `;
+        }
+
+        // Auto-check data on load
+        checkStoredData();
+      });
+
+      async function checkStoredData() {
+        const resultsDiv = document.getElementById("dataStatus");
+
+        try {
+          const linksData = await SafeStorage.getItem(
+            "customLinksWithCategories"
+          );
+          const categoriesData = await SafeStorage.getItem("customCategories");
+          const themeData = await SafeStorage.getItem("selectedTheme");
+
+          let html = '<div class="status info">';
+
+          if (linksData) {
+            const links = JSON.parse(linksData);
+            html += `<div class="link-count">Found ${links.length} saved bookmarks!</div>`;
+
+            // Group by category
+            const grouped = {};
+            links.forEach((link) => {
+              if (!grouped[link.category]) grouped[link.category] = [];
+              grouped[link.category].push(link);
+            });
+
+            html += "<h3>Categories:</h3><ul>";
+            Object.entries(grouped).forEach(([category, categoryLinks]) => {
+              html += `<li><strong>${category}</strong>: ${categoryLinks.length} links</li>`;
+            });
+            html += "</ul>";
+          } else {
+            html += '<div class="status error">No bookmark data found</div>';
+          }
+
+          if (categoriesData) {
+            const categories = JSON.parse(categoriesData);
+            html += `<p>Categories: ${categories.join(", ")}</p>`;
+          }
+
+          if (themeData) {
+            html += `<p>Theme: ${themeData}</p>`;
+          }
+
+          html += "</div>";
+          resultsDiv.innerHTML = html;
+        } catch (error) {
+          resultsDiv.innerHTML = `<div class="status error">Error checking data: ${error.message}</div>`;
+        }
+      }
+
+      async function showRawData() {
+        const rawDataDiv = document.getElementById("rawData");
+
+        try {
+          const allData = await SafeStorage.getAllData();
+          rawDataDiv.innerHTML = `
+                    <h3>Raw Storage Data:</h3>
+                    <pre>${JSON.stringify(allData, null, 2)}</pre>
+                `;
+          rawDataDiv.classList.remove("hidden");
+        } catch (error) {
+          rawDataDiv.innerHTML = `<div class="status error">Error: ${error.message}</div>`;
+          rawDataDiv.classList.remove("hidden");
+        }
+      }
+
+      async function exportData() {
+        try {
+          const allData = await SafeStorage.getAllData();
+
+          const exportData = {
+            timestamp: new Date().toISOString(),
+            version: "1.0.0",
+            extensionName: "HomeBase",
+            data: allData,
+          };
+
+          const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+            type: "application/json",
+          });
+
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `homebase-backup-${
+            new Date().toISOString().split("T")[0]
+          }.json`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+
+          showResult("Data exported successfully!", "success");
+        } catch (error) {
+          showResult(`Export failed: ${error.message}`, "error");
+        }
+      }
+
+      async function importData() {
+        const fileInput = document.getElementById("importFile");
+        const file = fileInput.files[0];
+
+        if (!file) {
+          showResult("Please select a file first", "error");
+          return;
+        }
+
+        try {
+          const text = await file.text();
+          const importData = JSON.parse(text);
+
+          if (!importData.data) {
+            throw new Error("Invalid backup file format");
+          }
+
+          // Import the data
+          if (isExtension) {
+            await chrome.storage.local.set(importData.data);
+          } else {
+            Object.entries(importData.data).forEach(([key, value]) => {
+              localStorage.setItem(key, value);
+            });
+          }
+
+          showResult(
+            "Data imported successfully! Refresh the page to see changes.",
+            "success"
+          );
+
+          // Refresh the data status
+          setTimeout(checkStoredData, 1000);
+        } catch (error) {
+          showResult(`Import failed: ${error.message}`, "error");
+        }
+      }
+
+      function goToHomeBase() {
+        if (isExtension) {
+          // Open HomeBase
+          window.location.href = "home-base.html";
+        } else {
+          showResult(
+            "Please open home-base.html through the Chrome extension or load it directly",
+            "info"
+          );
+        }
+      }
+
+      function openExtensionPage() {
+        if (isExtension) {
+          // Already in extension context
+          showResult("You are already in the extension context", "success");
+        } else {
+          showResult(
+            `
+                    To access extension data:<br>
+                    1. Go to chrome://extensions/<br>
+                    2. Find "HomeBase"<br>
+                    3. Copy the Extension ID<br>
+                    4. Visit: chrome-extension://[ID]/recovery.html<br>
+                    <br>
+                    Or try opening a new tab (which should load your HomeBase automatically)
+                `,
+            "info"
+          );
+        }
+      }
+
+      async function resetAllData() {
+        if (
+          confirm(
+            "This will delete ALL your bookmarks and settings. Are you absolutely sure?"
+          )
+        ) {
+          if (confirm("FINAL WARNING: This cannot be undone. Continue?")) {
+            try {
+              await SafeStorage.clear();
+              showResult("All data cleared successfully", "success");
+              setTimeout(checkStoredData, 500);
+            } catch (error) {
+              showResult(`Reset failed: ${error.message}`, "error");
+            }
+          }
+        }
+      }
+
+      function showResult(message, type) {
+        const resultsDiv = document.getElementById("results");
+        resultsDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+
+        // Auto-hide after 5 seconds for success messages
+        if (type === "success") {
+          setTimeout(() => {
+            resultsDiv.innerHTML = "";
+          }, 5000);
+        }
+      }
+    </script>
+  </body>
+</html>
