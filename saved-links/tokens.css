@@ -1,0 +1,99 @@
+/* Design tokens — semantic-first.
+   Hex values per project convention; all other CSS references these tokens. */
+
+:root {
+  /* color: surfaces */
+  --color-bg: #fafaf7;
+  --color-surface: #ffffff;
+  --color-tag-bg: #f0ede5;
+
+  /* color: text & accents */
+  --color-text: #1a1a1a;
+  --color-text-muted: #595959; /* 7.04:1 on bg, 7.36:1 on surface */
+  --color-accent: #4a3a2a;
+  --color-tag-text: #4a3a2a;
+
+  /* color: borders & focus
+     border-subtle is decorative only (cards, dividers).
+     border-strong is for UI components where the boundary IS the indicator
+     (form inputs, tag-pill outlines) — meets WCAG 1.4.11 (≥3:1 against surface). */
+  --color-border-subtle: #d9d6cd; /* 1.45:1 — visual separation only */
+  --color-border-strong: #767169; /* 4.05:1 on surface, 3.87:1 on bg */
+  --color-border: var(--color-border-subtle); /* legacy alias */
+  --color-focus-ring: #4a3a2a;
+
+  /* color: links */
+  --color-link: #1f4d80; /* 7.59:1 on bg, 7.94:1 on surface */
+  --color-link-hover: #163766;
+
+  /* color: status */
+  --color-danger: #8a3a2a;
+
+  /* spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-24: 96px;
+
+  /* radius */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 24px;
+
+  /* typography */
+  --font-stack: -apple-system, BlinkMacSystemFont, "Inter", system-ui, sans-serif;
+  --font-size-xs: 11px;
+  --font-size-sm: 13px;
+  --font-size-md: 14px;
+  --font-size-lg: 15px;
+  --font-size-xl: 28px;
+  --line-height-base: 1.55;
+
+  /* motion (overridden by prefers-reduced-motion below) */
+  --motion-fast: 0.15s ease;
+  --motion-medium: 0.25s ease;
+
+  /* layout */
+  --layout-max-width: 760px;
+
+  /* z-index scale */
+  --z-search: 10;
+  --z-toast: 100;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #1a1a17;
+    --color-surface: #232320;
+    --color-tag-bg: #2d2c27;
+
+    --color-text: #f0ede5;
+    --color-text-muted: #aaa49a; /* 6.92:1 on bg, 6.27:1 on surface */
+    --color-accent: #d4c4a8;
+    --color-tag-text: #d4c4a8;
+
+    --color-border-subtle: #3d3c35;
+    --color-border-strong: #807a6e; /* 4.39:1 on surface, 4.84:1 on bg */
+    --color-border: var(--color-border-subtle);
+    --color-focus-ring: #d4c4a8;
+
+    --color-link: #9bbfe5; /* 9.04:1 on bg */
+    --color-link-hover: #b8d2ee;
+
+    --color-danger: #e0a89a; /* 7.06:1 on bg */
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-fast: 0s;
+    --motion-medium: 0s;
+  }
+}

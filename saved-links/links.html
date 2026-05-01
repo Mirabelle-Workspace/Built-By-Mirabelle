@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Saved Links</title>
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <link rel="icon" type="image/png" sizes="128x128" href="icon-128.png">
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<div class="wrap">
+
+  <header>
+    <div>
+      <h1>Saved Links</h1>
+      <p class="meta">Local-only. Persists in this browser.</p>
+      <a class="aa-badge" href="https://github.com/Mirabelle-Workspace/Built-By-Mirabelle/blob/main/saved-links/AUDIT.md" target="_blank" rel="noopener" aria-label="WCAG 2.1 AA conformance — opens audit on GitHub">WCAG 2.1 AA</a>
+    </div>
+    <div class="header-actions" role="group" aria-label="Saved Links actions">
+      <button id="add-toggle" class="primary" type="button" aria-expanded="false" aria-controls="form-panel">+ Add link</button>
+      <button id="import-tabs" type="button">Import open tabs</button>
+      <button id="export" type="button">Export JSON</button>
+      <button id="import" type="button">Import JSON</button>
+      <button id="reset" class="danger" type="button">Reset to seed</button>
+      <input id="import-input" type="file" accept="application/json,.json" hidden>
+    </div>
+  </header>
+
+  <div class="search" role="search">
+    <label for="q" class="sr-only">Search links</label>
+    <div class="search-inner">
+      <input id="q" type="search" placeholder="Search links, tags, or categories" autocomplete="off">
+      <button class="search-clear" id="clear" type="button" aria-label="Clear search">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="count" id="count" aria-live="polite"></div>
+  </div>
+
+  <div class="tag-filters" id="tag-filters" role="group" aria-label="Filter by tag"></div>
+
+  <section class="form-panel" id="form-panel" role="region" aria-labelledby="form-panel-heading" hidden>
+    <h2 id="form-panel-heading" class="sr-only">Add or edit a link</h2>
+    <div class="row cols-2">
+      <div>
+        <label for="f-url">URL</label>
+        <input id="f-url" type="url" placeholder="https://..." aria-describedby="f-url-help">
+        <span id="f-url-help" class="sr-only">Optional if a title is provided.</span>
+      </div>
+      <div>
+        <label for="f-title">Title</label>
+        <input id="f-title" type="text" placeholder="Display title" aria-describedby="f-title-help">
+        <span id="f-title-help" class="sr-only">Optional if a URL is provided.</span>
+      </div>
+    </div>
+    <div class="row cols-2">
+      <div>
+        <label for="f-category">Category</label>
+        <select id="f-category"></select>
+      </div>
+      <div>
+        <label for="f-new-category">Or new category</label>
+        <input id="f-new-category" type="text" placeholder="Leave blank to use selected">
+      </div>
+    </div>
+    <div class="row cols-2">
+      <div>
+        <label for="f-tags">Tags (comma-separated)</label>
+        <input id="f-tags" type="text" placeholder="Atelier Primitives, ColorX">
+      </div>
+      <div>
+        <label for="f-desc">Description (optional)</label>
+        <textarea id="f-desc" placeholder="One-line note about why you saved it"></textarea>
+      </div>
+    </div>
+    <div id="form-status" class="form-status" role="alert"></div>
+    <div class="form-actions">
+      <button id="form-cancel" type="button">Cancel</button>
+      <button id="form-save" class="primary" type="button">Save</button>
+    </div>
+  </section>
+
+  <main id="main" tabindex="-1">
+    <div class="empty" id="empty" role="status">No matches.</div>
+    <div id="content"></div>
+  </main>
+
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+<script src="links.js"></script>
+
+</body>
+</html>

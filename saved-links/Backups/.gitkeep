@@ -1,0 +1,3 @@
+Drop exported saved-links-YYYY-MM-DD.json files here.
+This folder mirrors HomeBase's Backups/ pattern so version-controlled snapshots
+of your saved links live alongside the extension code.

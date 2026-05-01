@@ -1,0 +1,42 @@
+{
+    "manifest_version": 3,
+    "name": "Saved Links",
+    "version": "2.2.0",
+    "description": "A local-only saved-links page with categories, tags, search, and one-click bulk import of all your open tabs.",
+    "permissions": [
+        "tabs",
+        "scripting"
+    ],
+    "action": {
+        "default_title": "Open Saved Links",
+        "default_icon": {
+            "16": "icon-16.png",
+            "48": "icon-48.png",
+            "128": "icon-128.png"
+        }
+    },
+    "icons": {
+        "16": "icon-16.png",
+        "48": "icon-48.png",
+        "128": "icon-128.png"
+    },
+    "background": {
+        "service_worker": "background.js"
+    },
+    "commands": {
+        "open-saved-links": {
+            "suggested_key": {
+                "default": "Alt+Shift+S"
+            },
+            "description": "Open Saved Links"
+        },
+        "send-tabs-to-saved-links": {
+            "suggested_key": {
+                "default": "Alt+Shift+L"
+            },
+            "description": "Send current window's tabs to Saved Links"
+        }
+    },
+    "author": "Mirabelle Doiron",
+    "offline_enabled": true
+}
