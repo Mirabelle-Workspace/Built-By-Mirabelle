@@ -1,0 +1,7 @@
+# Built by Mirabelle — robots.txt
+# Allow all well-behaved crawlers everywhere.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://builtbymirabelle.com/sitemap.xml
